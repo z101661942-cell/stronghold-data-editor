@@ -11,14 +11,14 @@
     "game-modding"
   ],
   "license": "GPL-3.0-or-later",
-  "author": "sganggs",
-  "homepage": "https://github.com/sganggs/stronghold-data-editor",
+  "author": "z101661942-cell",
+  "homepage": "https://github.com/z101661942-cell/stronghold-data-editor",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/sganggs/stronghold-data-editor.git"
+    "url": "git+https://github.com/z101661942-cell/stronghold-data-editor.git"
   },
   "bugs": {
-    "url": "https://github.com/sganggs/stronghold-data-editor/issues"
+    "url": "https://github.com/z101661942-cell/stronghold-data-editor/issues"
   },
   "private": false,
   "type": "commonjs",

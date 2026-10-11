@@ -2,7 +2,7 @@
 
 ## 1. 许可证：GPL-3.0-or-later
 
-Copyright (C) 2026 sganggs 与贡献者
+Copyright (C) 2026 z101661942-cell 与贡献者
 
 本仓库自己编写的源代码与文档（`tools/`、`dicts/`、`scripts/`、`docs/`、`examples/`、以及根目录下的 Markdown 文档）以 **GNU 通用公共许可证第 3 版或（由你选择）任何更新版本**（GPL-3.0-or-later）发布，全文见 [LICENSE](LICENSE)。
 
