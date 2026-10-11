@@ -1,0 +1,352 @@
+{
+  "acbattle_shop_char_cultivate_effect": {
+    "zh": "（源码里没有处理者：写了也不会生效）",
+    "phase": "未知",
+    "src": null
+  },
+  "add_enemy_kill_gain_coin": {
+    "zh": "悬赏敌人：为之后 round 场战斗加入 count 名指定敌人，击倒者获得 coin 资金",
+    "phase": "战斗",
+    "src": "server/sim/content/choices.js:120"
+  },
+  "add_enemy_selfbattle_win_gain_coin": {
+    "zh": "战术特训：己方各自行动阶段完美作战时，结算获得 coin 资金",
+    "phase": "结算",
+    "src": "server/sim/content/choices.js:120"
+  },
+  "auto_chess_change_map": {
+    "zh": "机变开卡时切换指定装置的开关，同时改变备战部署合法性",
+    "phase": "备战",
+    "src": "server/match/choices.js:497"
+  },
+  "band_coin_cost_gain_random_char_by_shop_level": {
+    "zh": "绮良：每累计花费 coin_cnt 资金，获得 count 名不超过商店等级的随机干员",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:173"
+  },
+  "band_cost_coin_reach_cnt_gain_chess_from_pool": {
+    "zh": "潘格尼尼：累计花费达 coin_cnt 资金后，从卡池随机获得 1 名干员，全场仅一次",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:237"
+  },
+  "band_first_self_refresh_present_char": {
+    "zh": "杜遥夜：每回合前两次主动刷新必定刷出 count 名指定盟约干员（不超过商店等级）",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:102"
+  },
+  "band_shop_refresh_copy_max_lv_char": {
+    "zh": "梓兰：每次主动刷新，把商店里最高阶干员复制一份到其他空位并冻结",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:121"
+  },
+  "bond_activated_add_layer": {
+    "zh": "助力：休整期结束时给所有已激活盟约加 layer 层，二阶以上改用 more_layer 层",
+    "phase": "备战",
+    "src": "server/sim/content/bonds/addon/meta.js:100"
+  },
+  "bond_layer_added_reward_equip": {
+    "zh": "维多利亚：每累计 layer 层，从指定装备池免费获得 count 件装备",
+    "phase": "备战",
+    "src": "server/sim/content/bonds/core.js:690"
+  },
+  "bond_layer_char_garrison_bonus": {
+    "zh": "投资人：干员获得时特质默认触发 2 次，层数达 layer 后改为 3 次",
+    "phase": "备战",
+    "src": "server/match/effectsMeta.js:181"
+  },
+  "bond_layer_gain_coin": {
+    "zh": "远见／奇迹：每累计 layer 层获得 count 资金，未激活期间欠下的下次补发",
+    "phase": "备战",
+    "src": "server/sim/content/bonds/addon/meta.js:45"
+  },
+  "bond_multi_layer_char_goods_price_bond_discount": {
+    "zh": "远见：层数达 layer1 后对应干员购买价减 discount，达 layer2 后所有干员永久减",
+    "phase": "商店",
+    "src": "server/sim/content/bonds/addon/meta.js:114"
+  },
+  "bond_refresh_shop_next_free": {
+    "zh": "奇迹：主动刷新时按 baseprob 加 prob 乘层数的概率让下次刷新免费",
+    "phase": "商店",
+    "src": "server/sim/content/bonds/addon/meta.js:130"
+  },
+  "char_attribute_mul": {
+    "zh": "练度加成：按练度档位给干员攻击、防御、生命提供独立乘区",
+    "phase": "战斗",
+    "src": "shared/potential.js:170"
+  },
+  "char_chess_transformation_equip": {
+    "zh": "突变细胞：战斗结束后销毁装备者，装备回到手牌，随机获得高一阶干员（最高 6 阶）",
+    "phase": "结算",
+    "src": "server/match/builtinMeta.js:224"
+  },
+  "char_dynamic_ability_new": {
+    "zh": "（源码里没有处理者：写了也不会生效）",
+    "phase": "未知",
+    "src": null
+  },
+  "char_respawntime_mul": {
+    "zh": "征召：己方干员的再部署时间变为原来的 scale 倍",
+    "phase": "战斗",
+    "src": "server/sim/content/choices.js:377"
+  },
+  "coin_carry_over": {
+    "zh": "坎诺特：回合开始时剩余资金不低于 capital，每 capital 得 interest 资金加进收入（上限 max）",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:276"
+  },
+  "enemy_attribute_add": {
+    "zh": "责罚类卡：按 enemy_level_type 指定敌人，生成时攻击、防御、血量等固定值增减",
+    "phase": "战斗",
+    "src": "server/sim/content/choices.js:380"
+  },
+  "enemy_attribute_mul": {
+    "zh": "排斥类卡：按 enemy_level_type 指定敌人，生成时攻击、防御、血量等按倍率改动",
+    "phase": "战斗",
+    "src": "server/sim/content/choices.js:380"
+  },
+  "env_gbuff_new": {
+    "zh": "战斗增益：按黑板键（攻击、生命、穿透、伤害倍率等）给己方干员加成",
+    "phase": "战斗",
+    "src": "server/sim/content/choices.js:373"
+  },
+  "env_gbuff_new_with_verify": {
+    "zh": "战斗增益：按 bbStr.key 分自愈（每次受伤回血）与无瑕（满血加攻防）两种",
+    "phase": "战斗",
+    "src": "server/sim/content/choices.js:373"
+  },
+  "equip_destory_deployment_cnt_change": {
+    "zh": "人事部文档：装备时销毁，把上场上限至少提到 count（最高 12）",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:124"
+  },
+  "equip_destory_gain_random_coin": {
+    "zh": "盟约之币／骑士储蓄罐：装备时销毁，随机获得 min 到 max 资金",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:71"
+  },
+  "equip_round_start_upgrade_char": {
+    "zh": "博士投影（普通）：装备等到下回合开始时销毁，把携带者晋升为精锐",
+    "phase": "回合开始",
+    "src": "server/match/builtinMeta.js:133"
+  },
+  "equip_with_another_gain_coin_when_gain_char": {
+    "zh": "天师古鼎：带炎国短刀时，每获得一名干员得 count 资金，每回合至多 max 次",
+    "phase": "备战",
+    "src": "server/sim/content/items/meta.js:170"
+  },
+  "first_buy_in_round_char_price_change": {
+    "zh": "休露丝：每回合首次购买指定盟约干员时，商店价格固定为 price",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:225"
+  },
+  "first_sell_char_chess_exchange_char_chess_in_shop": {
+    "zh": "巫恋：每回合首次出售普通干员时，与商店随机一名干员交换且不返还资金",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:300"
+  },
+  "gain_bond_char_per_round": {
+    "zh": "哈洛德：第 round 回合起每隔 preround 回合获得 1 名指定盟约干员",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:213"
+  },
+  "gain_coin_when_round_start": {
+    "zh": "精打细算玩偶：装备时销毁，之后每回合开始时获得 count 资金",
+    "phase": "回合开始",
+    "src": "server/match/builtinMeta.js:99"
+  },
+  "give_coin_in_round": {
+    "zh": "老鲤：把第 round 回合的收入直接改为 coin 资金",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:155"
+  },
+  "global_special_choice_all_activated": {
+    "zh": "战术卡条件键：标明该卡不受休整期条件限制，战斗中始终生效",
+    "phase": "战斗",
+    "src": "server/match/choices.js:503"
+  },
+  "global_special_choice_bond_addlayer": {
+    "zh": "盟誓卡：选卡时给 bond_list 里每个盟约加 count 层（无需激活）",
+    "phase": "备战",
+    "src": "server/sim/content/choices.js:240"
+  },
+  "global_special_choice_gain_coin": {
+    "zh": "财富卡：选卡时立即获得 count 资金",
+    "phase": "备战",
+    "src": "server/sim/content/choices.js:245"
+  },
+  "global_special_choice_gain_equip": {
+    "zh": "列装卡：选卡时从 pool 池随机获得 count 件装备",
+    "phase": "备战",
+    "src": "server/sim/content/choices.js:232"
+  },
+  "global_special_choice_prep_finish_bench_at_least": {
+    "zh": "火力卡：休整期结束时手牌区单位数不少于 count，战斗效果才生效",
+    "phase": "备战",
+    "src": "server/sim/content/choices.js:141"
+  },
+  "global_special_choice_prep_finish_bench_at_most": {
+    "zh": "锐利卡：休整期结束时手牌区单位数不多于 count，战斗效果才生效",
+    "phase": "备战",
+    "src": "server/sim/content/choices.js:142"
+  },
+  "global_special_choice_prep_finish_same_row_at_least": {
+    "zh": "征召卡：战斗开始时同一行干员数不少于 count，战斗效果才生效",
+    "phase": "战斗",
+    "src": "server/sim/content/choices.js:143"
+  },
+  "global_special_choice_refresh_free": {
+    "zh": "补给卡：选卡时获得 count 次免费刷新",
+    "phase": "商店",
+    "src": "server/sim/content/choices.js:248"
+  },
+  "next_battle_add_enemy_win_gain_coin": {
+    "zh": "战术特训卡：下场战斗加入指定敌人，完美作战时结算获得 coin 资金",
+    "phase": "结算",
+    "src": "server/sim/content/choices.js:112"
+  },
+  "other_bond_add_trigger_cnt": {
+    "zh": "（源码里没有处理者：写了也不会生效）",
+    "phase": "未知",
+    "src": null
+  },
+  "prep_finish_char_bond_add_layer": {
+    "zh": "华法琳：休整期结束时每个等阶各随机一名场上干员，其盟约层数加 layer",
+    "phase": "备战",
+    "src": "server/sim/content/bands/meta.js:84"
+  },
+  "prep_start_gain_chess_from_pool_in_round": {
+    "zh": "老鲤：第 round 回合开始时从卡池随机获得 1 名干员",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:161"
+  },
+  "preparation_start_add_special_goods_every_n_round": {
+    "zh": "娜仁图亚：每 round 回合进入休整期时，免费刷出 refresh_cnt 件装备任选 1 件",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:356"
+  },
+  "preparation_start_gain_chess_every_n_round": {
+    "zh": "杜宾：每 round 回合的回合开始时，获得 chess 指定的棋子或法术",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:144"
+  },
+  "preparation_start_gain_chess_from_round": {
+    "zh": "第 round 回合进入休整期时，获得 chess 指定的干员或装备 count 个",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:134"
+  },
+  "refresh_shop_count_gain_coin_bond_char_chess": {
+    "zh": "贾维：累计主动刷新 refresh_count 次后免费获得 1 名盟约干员（每回合至多 max_count 名）",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:344"
+  },
+  "round_start_activate_char_chess_effect_in_board": {
+    "zh": "铃兰：回合开始时触发场上最右（其次最下）一名干员的获得时特质",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:286"
+  },
+  "round_start_all_player_change_enemy_2": {
+    "zh": "鸭爵：从第 round 回合起战斗开始时把 0 到 max 名地面敌人换成指定敌人，击倒者得 1 资金",
+    "phase": "战斗",
+    "src": "server/sim/content/bands/meta.js:471"
+  },
+  "round_start_bond_check_gain_layer": {
+    "zh": "余：第 round 回合开始时只激活 factioncount 个盟约则其加 count1 层，否则每个已激活盟约加 count2 层",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:255"
+  },
+  "round_start_gain_char_chess_in_shop_every_n_round": {
+    "zh": "松桐：每 round 回合的回合开始时免费获得商店中 1 名随机干员并清空该位",
+    "phase": "回合开始",
+    "src": "server/sim/content/bands/meta.js:317"
+  },
+  "round_start_gain_coin_by_bond_char_chess_buy": {
+    "zh": "玛恩纳：每购买一名指定盟约干员，下回合开始时获得 count 资金（每回合至多 max_count 次）",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:331"
+  },
+  "sell_char_count_gain_equip_owner_bond": {
+    "zh": "商业包装方案：每累计出售 count 名干员，获得 1 名与装备者同盟约的普通干员",
+    "phase": "商店",
+    "src": "server/match/builtinMeta.js:202"
+  },
+  "single_special_choice_gain_bond_chess": {
+    "zh": "驰援卡：选卡时从卡池免费获得 count 名指定盟约干员（优先不超过商店等级）",
+    "phase": "备战",
+    "src": "server/sim/content/choices.js:257"
+  },
+  "single_special_choice_gloden_char_chess": {
+    "zh": "升华卡：接下来购买的 count 名干员直接变为精锐",
+    "phase": "商店",
+    "src": "server/sim/content/choices.js:254"
+  },
+  "single_special_choice_gloden_equip_chess": {
+    "zh": "整备卡：接下来购买的 count 件装备直接变为进阶（金色）装备",
+    "phase": "商店",
+    "src": "server/sim/content/choices.js:251"
+  },
+  "trap_copy_front_char": {
+    "zh": "画卷：使用后销毁，复制范围内一名干员（含精锐状态），装备回到手牌",
+    "phase": "其他",
+    "src": "server/sim/content/items/meta.js:138"
+  },
+  "trap_create_self_choice": {
+    "zh": "教鞭／神秘顾客：使用后销毁，从 3 张悬赏卡中选 1 张，其敌人加入下场战斗",
+    "phase": "其他",
+    "src": "server/sim/content/items/meta.js:112"
+  },
+  "trap_disney_special": {
+    "zh": "神秘顾客：被主动销毁时获得 count 资金，法术传给下一位存活玩家",
+    "phase": "其他",
+    "src": "server/sim/content/items/meta.js:153"
+  },
+  "up_shop_add_special_goods": {
+    "zh": "凯瑟琳：每次升级调度中心时，从 pool 池免费刷出 count 件装备任选 1 件",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:268"
+  },
+  "up_shop_next_refresh_must_present_bond_char": {
+    "zh": "佩佩：调度中心升到 lvlist 指定等级后，下次主动刷新优先出现指定盟约干员",
+    "phase": "商店",
+    "src": "server/sim/content/bands/meta.js:193"
+  },
+  "use_equip_gain_coin_when_next_round_start": {
+    "zh": "见钱眼开玩偶：装备时销毁，下回合开始时额外获得 count 资金",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:121"
+  },
+  "use_equip_recruit_new_char_and_give_char_to_player_most_bond": {
+    "zh": "信标：装备时销毁携带者并刷出同级干员选 1 名，下回合把原干员送给盟约最多的队友",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:178"
+  },
+  "use_equip_reward_char_chess": {
+    "zh": "拟态物质：装备时销毁，同干员已有两张时再给一张，否则随机给一名同盟约干员",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:149"
+  },
+  "use_equip_reward_char_chess_bond_layer": {
+    "zh": "装备时销毁：给目标干员所属的每条盟约加 layer 层（未激活也生效）",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:79"
+  },
+  "use_equip_reward_char_chess_with_same_bond": {
+    "zh": "简易通讯机：装备时销毁，随机获得 count 名与携带者同盟约的干员（不超过商店等级）",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:109"
+  },
+  "use_equip_reward_random_char_chess_in_shop": {
+    "zh": "紧急调度券：装备时销毁，从商店随机取走 count 名干员，成功获得才清空该位",
+    "phase": "装备时",
+    "src": "server/sim/content/items/meta.js:74"
+  },
+  "use_equip_reward_special_goods_char_chess": {
+    "zh": "寻呼模块：装备时销毁，免费刷出 refresh_cnt 名同盟约干员任选 1 名（不超过商店等级）",
+    "phase": "装备时",
+    "src": "server/sim/content/items/meta.js:92"
+  },
+  "use_equip_upgrade_char": {
+    "zh": "博士投影（进阶）：装备时立即销毁，把携带者晋升为精锐",
+    "phase": "装备时",
+    "src": "server/match/builtinMeta.js:127"
+  }
+}

@@ -1,0 +1,27 @@
+# 编辑器写盘前留下的自动备份（如果你把 data/ 放在本仓库里，会被这些规则挡住）
+*.bak-*.json
+*.rollback-*
+*.beforefix-*
+*.orig-*
+*.upstream-*
+
+# 本地补丁脚本（由「改动」页导出，含你自己的改动，不该提交）
+tools/patch-my-data.mjs
+
+# 如果你在本仓库里克隆/放置游戏数据，避免误提交
+/data/
+/Stronghold-Protocol/
+
+# 依赖与缓存（本项目零依赖，留这些只是防手滑）
+node_modules/
+package-lock.json
+.pnpm-store/
+
+# 编辑器与系统杂物
+*.log
+*.tmp
+Thumbs.db
+desktop.ini
+.DS_Store
+.vscode/
+.idea/

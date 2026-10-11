@@ -1,0 +1,885 @@
+{
+ "runes": {
+  "act1autochess_band13_buff": {
+   "zh": "策略「崇高牺牲」：阿戈尔干员被击倒时，按该干员等阶增加阿戈尔盟约层数",
+   "src": "server/sim/content/bands/battle.js:88"
+  },
+  "act1autochess_band15_buff": {
+   "zh": "策略「食腐之蝶」：我方干员被击倒时，其余在场单位攻击力+20%（最多10层）",
+   "src": "server/sim/content/bands/battle.js:153"
+  },
+  "act1autochess_band16_buff": {
+   "zh": "策略「加急调派」：每次部署后再部署时间×0.5，可无限叠加",
+   "src": "server/sim/content/bands/battle.js:103"
+  },
+  "act1autochess_band17_buff": {
+   "zh": "策略「药枚实验」：最右列我方单位每次攻击有25%概率获得1层护盾",
+   "src": "server/sim/content/bands/battle.js:115"
+  },
+  "act1autochess_band18_buff": {
+   "zh": "策略「回收利用」：地面干员技能结束时，随机使周围四格1名干员获得3技力",
+   "src": "server/sim/content/bands/battle.js:138"
+  },
+  "act1autochess_band19_buff": {
+   "zh": "策略「以己之长」：我方干员的物理与法术伤害变为弱点伤害",
+   "src": "server/sim/content/bands/battle.js:171"
+  },
+  "act1autochess_band28_buff": {
+   "zh": "策略「命结之秘」：战斗中最先被击倒的3名干员立刻免费原地复活",
+   "src": "server/sim/content/bands/battle.js:75"
+  },
+  "act1autochess_band2_buff": {
+   "zh": "策略「众志合一」：激活盟约数达3/4/5时，全员攻击力与生命值+20/30/40%",
+   "src": "server/sim/content/bands/battle.js:63"
+  },
+  "act1autochess_bond_eff_assis": {
+   "zh": "协防盟约：全员受到物理与法术伤害-20%，成员造成伤害提升至120%/140%",
+   "src": "server/sim/content/bonds/addon/battle.js:189"
+  },
+  "act1autochess_bond_eff_deput": {
+   "zh": "助力盟约：全员防御力随层数提升，再部署时间-30%",
+   "src": "server/sim/content/bonds/addon/battle.js:141"
+  },
+  "act1autochess_bond_eff_egir": {
+   "zh": "阿戈尔盟约：成员生命值提升，开局吞噬身前干员；5人首次被击倒即复活",
+   "src": "server/sim/content/bonds/core.js:468"
+  },
+  "act1autochess_bond_eff_indom": {
+   "zh": "不屈盟约：地面干员被击倒时按概率立刻原地免费重新部署；3人全员+5技力",
+   "src": "server/sim/content/bonds/addon/battle.js:511"
+  },
+  "act1autochess_bond_eff_kjerag": {
+   "zh": "谢拉格盟约：成员伤害提升，对寒冷与冻结敌人更高；6人周期性放出寒风",
+   "src": "server/sim/content/bonds/core.js:294"
+  },
+  "act1autochess_bond_eff_laterano": {
+   "zh": "拉特兰盟约：成员弹药技能开局弹药提升；6人每消耗弹药全员攻击力+4%",
+   "src": "server/sim/content/bonds/core.js:313"
+  },
+  "act1autochess_bond_eff_preci": {
+   "zh": "精准盟约：成员攻击力随层数提升；3人时远程与精准干员无视30%防御与法抗",
+   "src": "server/sim/content/bonds/addon/battle.js:127"
+  },
+  "act1autochess_bond_eff_raid": {
+   "zh": "突袭盟约：成员久未攻击且范围内无敌人时，立即再部署到敌人旁",
+   "src": "server/sim/content/bonds/addon/battle.js:412"
+  },
+  "act1autochess_bond_eff_sargon": {
+   "zh": "萨尔贡盟约：成员开技能使全体成员攻速+12并随层数延长，6人再加攻击力",
+   "src": "server/sim/content/bonds/core.js:214"
+  },
+  "act1autochess_bond_eff_skillful": {
+   "zh": "灵巧盟约：成员及其周围4格（40层后8格）干员攻击速度提升",
+   "src": "server/sim/content/bonds/addon/battle.js:167"
+  },
+  "act1autochess_bond_eff_stead": {
+   "zh": "坚守盟约：全员生命值提升；3人时非成员所受伤害的40%由成员平均承担",
+   "src": "server/sim/content/bonds/addon/battle.js:540"
+  },
+  "act1autochess_bond_eff_swift": {
+   "zh": "迅捷盟约：成员技能结束时按概率回复12技力；40层后全员额外回复15技力",
+   "src": "server/sim/content/bonds/addon/battle.js:467"
+  },
+  "act1autochess_bond_eff_victoria": {
+   "zh": "维多利亚盟约：携带装备的成员伤害提升，6人按装备数额外加攻击力",
+   "src": "server/sim/content/bonds/core.js:271"
+  },
+  "act1autochess_bond_eff_yan": {
+   "zh": "炎盟约：成员攻击力随层数提升；6人召唤炎佑，9人进一步强化",
+   "src": "server/sim/content/bonds/core.js:182"
+  },
+  "act1autochess_debuff_3": {
+   "zh": "机变「自愈」：我方单位每次受到伤害即回复50点生命值",
+   "src": "server/sim/content/choices.js:308"
+  },
+  "act1autochess_debuff_9": {
+   "zh": "机变「无瑕」：干员生命值满时攻击力与防御力+30%",
+   "src": "server/sim/content/choices.js:308"
+  },
+  "act1autochess_equip_acarm042_global_buff": {
+   "zh": "灼燃维式重锤专属符文：造成法术伤害时附加10%该伤害的灼燃损伤",
+   "src": "server/sim/content/items/battle.js:321"
+  },
+  "act1autochess_equip_acarm043_global_buff": {
+   "zh": "坚固维式重锤专属符文：每次部署首次致命伤害时不死8秒",
+   "src": "server/sim/content/items/battle.js:344"
+  },
+  "act1autochess_equip_acarm044_global_buff": {
+   "zh": "加速维式重锤专属符文：携带者攻击速度+30",
+   "src": "server/sim/content/items/battle.js:298"
+  },
+  "act1autochess_equip_acarm045_global_buff": {
+   "zh": "战栗维式重锤专属符文：地面干员攻击时10%概率使目标战栗2秒",
+   "src": "server/sim/content/items/battle.js:329"
+  },
+  "act1autochess_equip_acarm049_global_buff": {
+   "zh": "歌利亚头盔专属符文：生命值+25%，身前一格无干员时额外+15%",
+   "src": "server/sim/content/items/battle.js:505"
+  },
+  "act1autochess_equip_acarm050_global_buff": {
+   "zh": "萨尔贡浓茶/家族徽章专属符文：技力自然回复速度+0.15/秒",
+   "src": "server/sim/content/items/battle.js:85"
+  },
+  "act1autochess_equip_acarm051_global_buff": {
+   "zh": "迅捷作战粮专属符文：部署时获得3技力，每个同盟约干员额外+3",
+   "src": "server/sim/content/items/battle.js:486"
+  },
+  "act1autochess_equip_acarm054_global_buff": {
+   "zh": "蜂鸣器专属符文：嘲讽等级+1（更易被攻击），生命值+40%",
+   "src": "server/sim/content/items/battle.js:86"
+  },
+  "act1autochess_equip_acarm056_global_buff": {
+   "zh": "不屈弹射器/骑士戒律专属符文：再部署时间-30%（骑士戒律-40%～-60%）",
+   "src": "server/sim/content/items/battle.js:85"
+  },
+  "act1autochess_equip_acarm057_global_buff": {
+   "zh": "拉特兰桥夹专属符文：弹药剩1发时50%概率恢复40%弹药（每部署3次）",
+   "src": "server/sim/content/items/battle.js:593"
+  },
+  "act1autochess_equip_acarm058_global_buff": {
+   "zh": "催泪瓦斯专属符文：攻击时3%概率使目标获得1层麻痹",
+   "src": "server/sim/content/items/battle.js:641"
+  },
+  "act1autochess_equip_acarm059_global_buff": {
+   "zh": "浓缩嗅盐专属符文：生命值高于70%时免疫晕眩、冻结等异常状态",
+   "src": "server/sim/content/items/battle.js:608"
+  },
+  "act1autochess_equip_acarm060_global_buff": {
+   "zh": "防暴盾专属符文：阻挡敌人时，来自非阻挡单位的伤害×0.6",
+   "src": "server/sim/content/items/battle.js:560"
+  },
+  "act1autochess_equip_acarm061_global_buff": {
+   "zh": "护盾无人机专属符文：治疗时10%概率使目标获得1层护盾",
+   "src": "server/sim/content/items/battle.js:615"
+  },
+  "act1autochess_equip_acarm063_global_buff": {
+   "zh": "精准狙击镜专属符文：攻击距离≥3格的目标时伤害×1.3",
+   "src": "server/sim/content/items/battle.js:464"
+  },
+  "act1autochess_equip_acarm064_global_buff": {
+   "zh": "突袭手雷专属符文：每次部署后10秒内攻击使目标晕眩2秒",
+   "src": "server/sim/content/items/battle.js:527"
+  },
+  "act1autochess_equip_acarm067_global_buff": {
+   "zh": "双模机械臂专属符文：物理与法术伤害转为弱点伤害（代码按道具ID实现）",
+   "src": "server/sim/content/items/battle.js:653"
+  },
+  "act1autochess_equip_acarm068_global_buff": {
+   "zh": "M3茧甲专属符文：被击倒时立刻免费原地复活（每场1次，进阶2次）",
+   "src": "server/sim/content/items/battle.js:629"
+  },
+  "act1autochess_equip_acarm076_global_buff": {
+   "zh": "铳骑之威专属符文：拉特兰成员攻击时35%概率追加150%攻击力物理子弹",
+   "src": "server/sim/content/items/battle.js:678"
+  },
+  "act1autochess_equip_acarm077_global_buff": {
+   "zh": "天师古鼎专属符文：炎成员本回合每获得1名干员攻速+25（最多3层）",
+   "src": "server/sim/content/items/battle.js:694"
+  },
+  "act1autochess_equip_acarm079_global_buff": {
+   "zh": "蒸汽之心专属符文：攻速+35，并借用场上维式重锤的效果（自带则翻倍）",
+   "src": "server/sim/content/items/battle.js:716"
+  },
+  "act1autochess_equip_acarm103_global_buff": {
+   "zh": "黄沙罗盘专属符文：初始技力+30，萨尔贡首次技能结束回复30技力",
+   "src": "server/sim/content/items/battle.js:740"
+  },
+  "act1vautochess_equip_acarm003_global_buff": {
+   "zh": "谢拉格不融冰专属符文：攻击时12%概率使目标寒冷1.5秒",
+   "src": "server/sim/content/items/battle.js:647"
+  },
+  "act1vautochess_equip_acarm024_global_buff": {
+   "zh": "炎国短刀专属符文：每次开启技能攻击力+5%（最多10层）",
+   "src": "server/sim/content/items/battle.js:474"
+  },
+  "act1vautochess_equip_acarm025_global_buff": {
+   "zh": "休眠子裔专属符文：每攻击1个目标回复自身2%最大生命值",
+   "src": "server/sim/content/items/battle.js:574"
+  },
+  "act1vautochess_equip_acarm037_global_buff": {
+   "zh": "有限加速器专属符文：每次攻击或治疗后攻速+1（最多60层）",
+   "src": "server/sim/content/items/battle.js:535"
+  },
+  "act2autochess_band12_buff": {
+   "zh": "策略「墨色真颜」：战斗开始时，场上同名干员攻击力+30%",
+   "src": "server/sim/content/bands/battle.js:180"
+  },
+  "act2autochess_band3_buff": {
+   "zh": "策略「统御号令」：战斗开始时每有1名精锐干员，精锐攻击力与生命值+10%",
+   "src": "server/sim/content/bands/battle.js:198"
+  },
+  "act2autochess_bond_eff_arcane": {
+   "zh": "奥术盟约：成员造成法术伤害时使目标受到的法术伤害提升，持续3秒",
+   "src": "server/sim/content/bonds/addon/battle.js:603"
+  },
+  "act2autochess_bond_eff_kazimierz": {
+   "zh": "卡西米尔盟约：每次部署提升成员攻击力；6人阻挡时脉冲真伤与晕眩",
+   "src": "server/sim/content/bonds/core.js:609"
+  },
+  "act2autochess_bond_eff_sargon[share]": {
+   "zh": "萨尔贡（娜仁图亚）：开技能改为把携带者的装备出借给周围8格干员",
+   "src": "server/sim/content/bonds/core.js:251"
+  },
+  "act2autochess_bond_eff_siracusa": {
+   "zh": "叙拉古盟约：成员部署后攻速提升；6人进入隐匿并概率造成真伤与恐惧",
+   "src": "server/sim/content/bonds/core.js:571"
+  },
+  "act2autochess_bond_eff_solo": {
+   "zh": "独行盟约：场上唯一独行成员攻击力与生命值+60%，部署时获得15技力",
+   "src": "server/sim/content/bonds/addon/battle.js:199"
+  },
+  "act2autochess_bond_eff_sunt": {
+   "zh": "绝技盟约：精锐干员攻击力+30%；5名精锐时精锐干员技力消耗-30%",
+   "src": "server/sim/content/bonds/addon/battle.js:204"
+  },
+  "act2autochess_equip_acarm055_global_buff": {
+   "zh": "伪装服专属符文：首次受到伤害后获得隐匿15秒",
+   "src": "server/sim/content/items/battle.js:547"
+  },
+  "act2autochess_equip_acarm078_global_buff": {
+   "zh": "海沟实验体专属符文：受伤时对来源造成50%攻击力法术伤害（0.5秒CD）",
+   "src": "server/sim/content/items/battle.js:701"
+  },
+  "act2autochess_equip_acarm102_ability": {
+   "zh": "耶拉冈德之泪专属符文：攻击范围内寒冷/冻结敌人每秒受30%攻击力法术伤害",
+   "src": "server/sim/content/items/battle.js:726"
+  },
+  "act2autochess_equip_acarm117_global_buff": {
+   "zh": "天马之枪专属符文：与天马之盔同装时，造成伤害追加30%攻击力真伤",
+   "src": "server/sim/content/items/battle.js:666"
+  },
+  "act2autochess_equip_acarm118_global_buff": {
+   "zh": "天马之盔专属符文：与天马之枪同装时，每秒回复8%最大生命值",
+   "src": "server/sim/content/items/battle.js:658"
+  },
+  "act2autochess_equip_acarm119_ability": {
+   "zh": "骑士戒律专属符文：技能开启后20秒内范围内敌人攻速与移速×0.65",
+   "src": "server/sim/content/items/battle.js:772"
+  },
+  "act2autochess_equip_acarm119_global_buff": {
+   "zh": "骑士戒律专属符文：技能期间攻击力+100%，致命伤害不退场、技能后撤退",
+   "src": "server/sim/content/items/battle.js:767"
+  },
+  "act2autochess_equip_acarm120_global_buff": {
+   "zh": "卡西米尔竞技旗专属符文：部署后15秒伤害×1.35，之后每0.5秒衰减4%",
+   "src": "server/sim/content/items/battle.js:580"
+  },
+  "act2autochess_equip_acarm121_ability": {
+   "zh": "叙拉古正装专属符文：部署方向左右两格的我方干员攻击速度+10",
+   "src": "server/sim/content/items/battle.js:447"
+  },
+  "act2autochess_equip_acarm122_global_buff": {
+   "zh": "家族徽章专属符文：隐匿期间攻击力每秒+2%直到+100%",
+   "src": "server/sim/content/items/battle.js:808"
+  },
+  "attr_common_global_buff": {
+   "zh": "通用属性符文：按 atk/def/max_hp 比例、攻速、法抗、技回等直接加成",
+   "src": "server/sim/content/items/battle.js:88"
+  },
+  "enemy_move_speed_mul": {
+   "zh": "敌方回合效果（急行军等）：敌方移动速度加成比例（0.15=+15%）",
+   "src": "server/sim/content/bosses.js:246"
+  },
+  "halfIdle_def_penetration": {
+   "zh": "机变「锐利」：我方干员无视30%防御力",
+   "src": "server/sim/content/choices.js:322"
+  },
+  "halfIdle_magic_resist_penetration": {
+   "zh": "机变「火力」：我方干员无视20点法术抗性",
+   "src": "server/sim/content/choices.js:320"
+  },
+  "halfidle_block_fixed_damage": {
+   "zh": "海沟实验体符文：每次受到伤害减免180点（结算防御与法抗后固定减伤）",
+   "src": "server/sim/content/items/battle.js:433"
+  },
+  "magic_penetrate_global_buff": {
+   "zh": "激光发射器专属符文：无视目标25%法术抗性",
+   "src": "server/sim/content/items/battle.js:86"
+  },
+  "periodic_damage": {
+   "zh": "源石溶剂符文：每秒对携带者造成60点无来源真实伤害",
+   "src": "server/sim/content/items/battle.js:403"
+  },
+  "silence_attachment": {
+   "zh": "奥术法阵专属符文：攻击使目标失去特殊能力5秒",
+   "src": "server/sim/content/items/battle.js:420"
+  }
+ },
+ "bb": {
+  "addition_sp": {
+   "zh": "黄沙罗盘：每次开启技能为全体萨尔贡干员回复的技力值（3点）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:756"
+  },
+  "ammo_percent": {
+   "zh": "按当前弹药量恢复的弹药比例（0.4=40%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:602"
+  },
+  "at_root": {
+   "zh": "叙拉古正装的标记字段（恒为1），代码未读取，含义未知",
+   "unit": "unknown",
+   "src": null
+  },
+  "atk": {
+   "zh": "攻击力（比例，0.15=+15%；与其它百分比加成直接乘算叠加）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:93"
+  },
+  "atk_buff_cnt": {
+   "zh": "攻击力加成可叠加的次数上限（10层）",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:477"
+  },
+  "atk_per_sec": {
+   "zh": "每秒提升的攻击力比例（0.02=每秒+2%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:812"
+  },
+  "atk_scale": {
+   "zh": "以自身攻击力为基数的伤害倍率（0.3=30%攻击力）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:668"
+  },
+  "atk_scale_1": {
+   "zh": "铳骑之威追加子弹的基础倍率（1.5=150%攻击力）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:687"
+  },
+  "atk_scale_2": {
+   "zh": "搭配拉特兰桥夹时的强化倍率（3=300%攻击力）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:687"
+  },
+  "atk_scale_ex": {
+   "zh": "搭配谢拉格不融冰时的强化倍率（1=100%攻击力）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:731"
+  },
+  "attack_speed": {
+   "zh": "攻击速度绝对值（30=攻速+30，可为负）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:94"
+  },
+  "big_hammer": {
+   "zh": "标记该 buff 为蒸汽之心可借用的维式重锤特殊效果（值为蒸汽之心 id，none=非大锤）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:123"
+  },
+  "bond": {
+   "zh": "盟约 id 标记（如 yanShip，限定该效果作用的盟约）",
+   "unit": "unknown",
+   "src": "server/match/choices.js:160"
+  },
+  "bond_list": {
+   "zh": "盟约 id 列表（逗号分隔，如 raidShip,steadShip）",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:241"
+  },
+  "choice_cnt": {
+   "zh": "特殊刷新时可免费选取的候选数量",
+   "unit": "count",
+   "src": "server/sim/content/bands/meta.js:362"
+  },
+  "choice_event": {
+   "zh": "机变事件组 id（教鞭/神秘顾客生成的选项，如 hunter_band_1）",
+   "unit": "unknown",
+   "src": "server/match/builtinMeta.js:27"
+  },
+  "cold": {
+   "zh": "寒冷状态持续时间（秒）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:649"
+  },
+  "count": {
+   "zh": "数量/次数（如击杀赏金需击杀的敌人数）",
+   "unit": "count",
+   "src": "server/sim/content/choices.js:124"
+  },
+  "damage": {
+   "zh": "周期性真实伤害数值（60=每秒60点）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:404"
+  },
+  "damage_scale": {
+   "zh": "伤害倍率（1.3=×130%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:466"
+  },
+  "damage_scale_minus": {
+   "zh": "衰减窗口结束后每步递减的伤害倍率（-0.04=每步减4%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:582"
+  },
+  "def": {
+   "zh": "防御力：通用属性符文下为比例（0.2=+20%），倍率类符文下 1.05=×105%，敌方减益为绝对值（-100）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:93"
+  },
+  "def_penetrate": {
+   "zh": "无视目标防御力的比例（0.3=无视30%）",
+   "unit": "ratio",
+   "src": "server/sim/content/choices.js:322"
+  },
+  "disarmed_duration": {
+   "zh": "战栗（缴械）状态持续时间（秒）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:337"
+  },
+  "duration": {
+   "zh": "效果持续时间（秒）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:529"
+  },
+  "enemy_exclude": {
+   "zh": "被排除在该效果之外的敌人 id 列表（竖线分隔，如炎佑）",
+   "unit": "unknown",
+   "src": "server/match/gamedata.js:403"
+  },
+  "enemy_id": {
+   "zh": "指定的敌人 id（悬赏/击杀赏金的目标敌人）",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:123"
+  },
+  "enemy_level_type": {
+   "zh": "生效的敌人等级类型（ELITE=精英 / BOSS=领袖）",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:382"
+  },
+  "equip_chess_id": {
+   "zh": "连携搭档装备的 chess id（去掉 _a/_b 后缀后比较是否同时携带）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:63"
+  },
+  "event": {
+   "zh": "触发该效果的服务端事件名（如 SERVER_GAIN=获得时）",
+   "unit": "unknown",
+   "src": "server/sim/content/garrisons/meta.js:375"
+  },
+  "ex_interval": {
+   "zh": "衰减计时步长（秒，每0.5秒衰减一次）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:582"
+  },
+  "ex_max_hp": {
+   "zh": "额外生命值比例（身前一格无干员时 +15%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:508"
+  },
+  "hammer_1": {
+   "zh": "蒸汽之心借用的第1件维式重锤装备 id（如 chess_item_4_09_e）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:120"
+  },
+  "hammer_2": {
+   "zh": "蒸汽之心借用的第2件维式重锤装备 id（如 chess_item_3_09_e）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:120"
+  },
+  "hammer_3": {
+   "zh": "蒸汽之心借用的第3件维式重锤装备 id（如 chess_item_3_10_e）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:120"
+  },
+  "hammer_4": {
+   "zh": "蒸汽之心借用的第4件维式重锤装备 id（如 chess_item_2_03_e）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:120"
+  },
+  "hp_ratio": {
+   "zh": "生命值比例（阈值或回复比例，0.7=70%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:610"
+  },
+  "hp_recovery_per_sec_by_max_hp_ratio": {
+   "zh": "每秒回复最大生命值的比例（0.08=每秒8%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:660"
+  },
+  "init_max_hp": {
+   "zh": "常驻生命值比例加成（0.25=+25%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:507"
+  },
+  "init_sp": {
+   "zh": "初始技力值（30=部署时获得30技力）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:743"
+  },
+  "interval": {
+   "zh": "触发/循环间隔（秒）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:729"
+  },
+  "invalid_in_band": {
+   "zh": "在该策略（band）下效果失效的标记（如 band_narant 下萨尔贡改变）",
+   "unit": "unknown",
+   "src": "server/sim/content/bonds/core.js:222"
+  },
+  "key": {
+   "zh": "符文键标记（与 bbStr.key 相同，指向战斗内结算实现）",
+   "unit": "unknown",
+   "src": "server/sim/content/support/index.js:67"
+  },
+  "layer": {
+   "zh": "盟约层数阈值（达到该层数时生效，如100层）",
+   "unit": "count",
+   "src": "server/match/effectsMeta.js:189"
+  },
+  "lock_duration": {
+   "zh": "触发冷却时间（秒，0.5=每0.5秒最多一次）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:704"
+  },
+  "magic_resist_penetrate": {
+   "zh": "无视法术抗性的比例（0.25=无视25%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:98"
+  },
+  "magic_resist_penetrate_fixed": {
+   "zh": "无视法术抗性的固定值（20=无视20点）",
+   "unit": "flat",
+   "src": "server/sim/content/choices.js:320"
+  },
+  "magic_resistance": {
+   "zh": "法术抗性绝对值（+20；敌方减益为负值，如-3）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:95"
+  },
+  "max": {
+   "zh": "随机/加成范围的上限（与 min 配对，如1~6资金）",
+   "unit": "count",
+   "src": "server/match/builtinMeta.js:75"
+  },
+  "max_atk": {
+   "zh": "攻击力提升的上限比例（1=最多+100%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:812"
+  },
+  "max_buff_cnt": {
+   "zh": "增益可叠加的层数上限（60层）",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:538"
+  },
+  "max_cnt": {
+   "zh": "层数/次数上限（3层）",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:696"
+  },
+  "max_hp": {
+   "zh": "最大生命值（比例，0.4=+40%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:93"
+  },
+  "max_respawn_cnt": {
+   "zh": "最多复活/自动再部署次数",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:630"
+  },
+  "max_stack_cnt": {
+   "zh": "叠加层数上限",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:617"
+  },
+  "max_trigger_cnt": {
+   "zh": "每次部署最多触发次数（3次）",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:595"
+  },
+  "min": {
+   "zh": "随机/加成范围的下限（与 max 配对）",
+   "unit": "count",
+   "src": "server/match/builtinMeta.js:74"
+  },
+  "move_speed": {
+   "zh": "移动速度倍率（0.65=×65%）；敌方效果中为比例的绝对值（0.15=+15%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:772"
+  },
+  "other_equip": {
+   "zh": "额外连携装备 id 列表（逗号分隔，取第一项）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:64"
+  },
+  "prob": {
+   "zh": "触发概率（0.1=10%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:600"
+  },
+  "radius": {
+   "zh": "触发距离（格，3=距离≥3格）",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:466"
+  },
+  "refresh_cnt": {
+   "zh": "特殊刷新出现的候选数量（3=出现三名）",
+   "unit": "count",
+   "src": "server/match/builtinMeta.js:163"
+  },
+  "respawn_time": {
+   "zh": "再部署时间变化比例（-0.3=-30%）",
+   "unit": "ratio",
+   "src": "server/sim/content/items/battle.js:96"
+  },
+  "scale": {
+   "zh": "倍率（0.5=再部署时间×50%）",
+   "unit": "ratio",
+   "src": "server/sim/content/choices.js:378"
+  },
+  "silence": {
+   "zh": "失去特殊能力（沉默）的持续时间（秒）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:421"
+  },
+  "sp": {
+   "zh": "技力值（点数）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:752"
+  },
+  "sp_each_person": {
+   "zh": "每个同盟约干员额外提供的技力（3点）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:487"
+  },
+  "sp_recovery_per_sec": {
+   "zh": "每秒自然回复的技力（0.15=每秒+0.15）",
+   "unit": "flat",
+   "src": "server/sim/content/items/battle.js:97"
+  },
+  "stun": {
+   "zh": "晕眩持续时间（秒）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:529"
+  },
+  "taunt_level": {
+   "zh": "嘲讽等级（1=更容易被敌人攻击）",
+   "unit": "count",
+   "src": "server/sim/content/items/battle.js:99"
+  },
+  "trap_036_storm#1": {
+   "zh": "装置开关别名：trap_036_storm 的 1 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_036_storm#2": {
+   "zh": "装置开关别名：trap_036_storm 的 2 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1104_aclasert#1": {
+   "zh": "装置开关别名：trap_1104_aclasert 的 1 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1104_aclasert#2": {
+   "zh": "装置开关别名：trap_1104_aclasert 的 2 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1104_aclasert#3": {
+   "zh": "装置开关别名：trap_1104_aclasert 的 3 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1104_aclasert#4": {
+   "zh": "装置开关别名：trap_1104_aclasert 的 4 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#001": {
+   "zh": "装置开关别名：trap_1105_accrate 的 001 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#002": {
+   "zh": "装置开关别名：trap_1105_accrate 的 002 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#003": {
+   "zh": "装置开关别名：trap_1105_accrate 的 003 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#004": {
+   "zh": "装置开关别名：trap_1105_accrate 的 004 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#101": {
+   "zh": "装置开关别名：trap_1105_accrate 的 101 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#102": {
+   "zh": "装置开关别名：trap_1105_accrate 的 102 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#103": {
+   "zh": "装置开关别名：trap_1105_accrate 的 103 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#104": {
+   "zh": "装置开关别名：trap_1105_accrate 的 104 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#201": {
+   "zh": "装置开关别名：trap_1105_accrate 的 201 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#202": {
+   "zh": "装置开关别名：trap_1105_accrate 的 202 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#203": {
+   "zh": "装置开关别名：trap_1105_accrate 的 203 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#204": {
+   "zh": "装置开关别名：trap_1105_accrate 的 204 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#301": {
+   "zh": "装置开关别名：trap_1105_accrate 的 301 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#302": {
+   "zh": "装置开关别名：trap_1105_accrate 的 302 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#303": {
+   "zh": "装置开关别名：trap_1105_accrate 的 303 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1105_accrate#304": {
+   "zh": "装置开关别名：trap_1105_accrate 的 304 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#001": {
+   "zh": "装置开关别名：trap_1106_achplat 的 001 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#002": {
+   "zh": "装置开关别名：trap_1106_achplat 的 002 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#003": {
+   "zh": "装置开关别名：trap_1106_achplat 的 003 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#004": {
+   "zh": "装置开关别名：trap_1106_achplat 的 004 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#101": {
+   "zh": "装置开关别名：trap_1106_achplat 的 101 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#102": {
+   "zh": "装置开关别名：trap_1106_achplat 的 102 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#103": {
+   "zh": "装置开关别名：trap_1106_achplat 的 103 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#104": {
+   "zh": "装置开关别名：trap_1106_achplat 的 104 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#201": {
+   "zh": "装置开关别名：trap_1106_achplat 的 201 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#202": {
+   "zh": "装置开关别名：trap_1106_achplat 的 202 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#203": {
+   "zh": "装置开关别名：trap_1106_achplat 的 203 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#204": {
+   "zh": "装置开关别名：trap_1106_achplat 的 204 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#301": {
+   "zh": "装置开关别名：trap_1106_achplat 的 301 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#302": {
+   "zh": "装置开关别名：trap_1106_achplat 的 302 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#303": {
+   "zh": "装置开关别名：trap_1106_achplat 的 303 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_1106_achplat#304": {
+   "zh": "装置开关别名：trap_1106_achplat 的 304 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_218_fttree#1": {
+   "zh": "装置开关别名：trap_218_fttree 的 1 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_218_fttree#2": {
+   "zh": "装置开关别名：trap_218_fttree 的 2 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_218_fttree#3": {
+   "zh": "装置开关别名：trap_218_fttree 的 3 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "trap_218_fttree#4": {
+   "zh": "装置开关别名：trap_218_fttree 的 4 号装置开关，1=启用、0=关闭",
+   "unit": "unknown",
+   "src": "server/sim/content/choices.js:133"
+  },
+  "undeadable_duration": {
+   "zh": "不死（生命值不低于1）的持续时间（秒）",
+   "unit": "sec",
+   "src": "server/sim/content/items/battle.js:353"
+  },
+  "valid_in_band": {
+   "zh": "仅在该策略（band）下生效的标记（band_narant）",
+   "unit": "unknown",
+   "src": "server/sim/content/bonds/core.js:219"
+  },
+  "value": {
+   "zh": "数值（含义随符文而定，如海沟实验体的固定减伤点数）",
+   "unit": "unknown",
+   "src": "server/sim/content/items/battle.js:434"
+  }
+ }
+}

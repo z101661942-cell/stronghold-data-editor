@@ -1,0 +1,36 @@
+{
+  "name": "stronghold-data-editor",
+  "version": "1.0.0",
+  "description": "单文件网页编辑器：改《卫戍协议》同人复刻的盟约 / 特质 / 道具 / 悬赏·战术卡 / 效果数据（含全字段中文对照、校验与可重放补丁）",
+  "keywords": [
+    "stronghold-protocol",
+    "arknights",
+    "auto-chess",
+    "data-editor",
+    "save-editor",
+    "game-modding"
+  ],
+  "license": "GPL-3.0-or-later",
+  "author": "sganggs",
+  "homepage": "https://github.com/sganggs/stronghold-data-editor",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sganggs/stronghold-data-editor.git"
+  },
+  "bugs": {
+    "url": "https://github.com/sganggs/stronghold-data-editor/issues"
+  },
+  "private": false,
+  "type": "commonjs",
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "serve": "node tools/editor-server.cjs --port 3001",
+    "open": "node tools/editor-server.cjs --port 3001",
+    "test": "node tools/bond-editor.test.mjs && node tools/bond-editor.smoke.mjs && node tools/diy-write.test.mjs",
+    "test:editor": "node tools/bond-editor.test.mjs",
+    "test:smoke": "node tools/bond-editor.smoke.mjs",
+    "test:diy": "node tools/diy-write.test.mjs"
+  }
+}

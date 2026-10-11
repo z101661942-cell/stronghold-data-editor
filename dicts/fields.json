@@ -1,0 +1,701 @@
+{
+  "items": {
+    "id": {
+      "zh": "道具唯一 id（同时也是 data/items.json 这个对象 map 的 key）",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/gamedata.js:185 / server/sim/content/items/battle.js:873",
+      "note": "服务端按对象 key 查表（GameData.item = own(this._items, id)），但战斗侧会用记录自带的 rec.id 反推物品族 key（itemKeyOf(rec.id)，用来匹配锤子族与 BY_ITEM 处理器）。key 与 id 必须一致，否则这件装备的战斗效果会静默消失。"
+    },
+    "baseId": {
+      "zh": "普通件 id：普通件等于自己，进阶件指向它的普通件",
+      "kind": "id",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2043",
+      "note": "运行时代码不读 items.json 的 baseId（gd.baseIdOf 只处理 chess）。它只是 build-data 里「普通/进阶成对」的标注，并且是 SHOP_EXCLUDED_ITEMS / ITEM_RULES 两张人工清单的键，改它会让重新生成数据时那些标记失效。"
+    },
+    "goldenId": {
+      "zh": "进阶（金）版本的 id",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/player/acquire.js:258",
+      "note": "合成产物 id 的兜底：服务端与客户端都用 `upgradeChessId || goldenId`（acquire.js:258、public/js/ui/gameLogic/placement.js:436、shop.js:91）。指向不存在的 id 会让这件道具不再合成（_itemMergeable 静默返回 false）；指向别的道具会合成出错误的进阶件。当前数据里 goldenId 与 upgradeChessId 始终相等，改一处不改另一处就会出现两个不一致的来源。"
+    },
+    "isGolden": {
+      "zh": "是否进阶（金）版本",
+      "kind": "boolean",
+      "risk": "危险",
+      "src": "server/sim/simdata.js:72 / server/match/player/acquire.js:255",
+      "note": "决定三件事：能不能进商店池（isShopItem 要求 !isGolden）、能不能参与合成（_itemMergeable 要求 !isGolden）、价格与展示（详情卡显示「进阶」标签，detailPanel.js:505）。把普通件改成 true 会让它彻底不进商店也不能再合成；把进阶件改成 false 会让它有可能被商店抽到。"
+    },
+    "trapId": {
+      "zh": "官方 trap（棋子）id，用于客户端查道具图标/立绘",
+      "kind": "id",
+      "risk": "安全",
+      "src": "public/js/ui/assetUrls.js:114 / public/js/assets.js:106",
+      "note": "纯显示：客户端拿 iconId（回退 trapId）去 assets 清单找图标。改错只会让图标变成默认占位符，不影响任何规则。当前 iconId 与 trapId 同值。"
+    },
+    "iconId": {
+      "zh": "图标 id（当前恒等于 trapId）",
+      "kind": "id",
+      "risk": "安全",
+      "src": "public/js/ui/assetUrls.js:114 / public/js/render/app.js:658",
+      "note": "纯显示：itemIconUrl 先读 iconId 再回退 trapId（assetUrls.js:114），渲染层也用 { trapId, iconId } 找图标。不影响规则。"
+    },
+    "identifier": {
+      "zh": "官方 trapChessDataDict 的标识数字",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2044（运行时无读取者）",
+      "note": "结论：items.json 的 identifier 没有任何运行时代码读取。全库读 identifier 的只有 data/chess.json 与 data/bonds.json 的同名字段（server/match/gamedata.js:120 给盟约排序、public/js/ui/matchInfo.js:50）。纯元数据，随便改。"
+    },
+    "name": {
+      "zh": "显示名",
+      "kind": "string",
+      "risk": "安全",
+      "src": "public/js/ui/detailPanel.js:507 / server/match/effectsMeta.js:438",
+      "note": "显示在详情卡、商店道具卡、道具补给/机密商店卡与效果栏的 label 上（offerLabel 读 it.name）。注意 build-data 里 choices.json 的 pools 会按名字反查道具（tools/build-data.mjs itemByName），改名可能让那些池定义找不到它。"
+    },
+    "itemType": {
+      "zh": "道具大类：EQUIP=装备，MAGIC=奇术",
+      "kind": "enum",
+      "risk": "危险",
+      "src": "server/sim/simdata.js:72 / server/match/player/items.js:26,111",
+      "note": "EQUIP 才能进商店池（isShopItem 要求 itemType === \"EQUIP\"）、才能走 g.equip 配发（items.js:26）；MAGIC 是「奇术」，必须拖到战场格子上用 g.art（items.js:111），且被判分逻辑当作奇术处理（bot.js:1863）。把 EQUIP 改成 MAGIC 会让它从所有商店抽取池消失并强制改变使用方式。"
+    },
+    "tier": {
+      "zh": "阶（1–6），等于商店抽取池的分档",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/match/gamedata.js:117 / server/sim/simdata.js:73",
+      "note": "必须 1–6 的整数：非整数会让 isShopItem 返回 false（要求 Number.isInteger），整件道具从商店道具槽、道具补给、机密商店、所有 pool_equip_* 抽取里消失；≥7 不会被 rollItem 抽到（pool.js:145-166 只在 1..6 内选档）。在 1–6 内改值只改变它出现的商店等级与平衡。"
+    },
+    "shopSortId": {
+      "zh": "官方商店内的排序号（shopLevelSortId）",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2046（运行时无读取者）",
+      "note": "结论：items.json 的 shopSortId 没有任何运行时代码读取。全库读 shopSortId 的只有 data/chess.json 的同名字段（public/js/ui/loadoutModel.js:373、ownershipModel.js:92 用于编队/持有界面排序）。纯元数据。"
+    },
+    "price": {
+      "zh": "调度中心标价（购买价，单位=资金）",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/match/gamedata.js:268 / server/match/player/economy.js:71,136",
+      "note": "是购买价：抽到该道具的商店槽 basePrice = itemPrice(id) = rec.price（economy.js:71），实际扣钱前会走 priceOf(slot) 的 onPrice 修正（economy.js:55,136），buy() 只按修正后的价格扣款（economy.js:155）；AI 用同一个价格打分（bot.js:1496-1528）。非负数才会被采用，否则静默回落到默认 2（gamedata.js:268-270）。改高会同时抬高玩家与 AI 的购买成本。"
+    },
+    "hideInShop": {
+      "zh": "官方标记「商店不卖」",
+      "kind": "boolean",
+      "risk": "谨慎",
+      "src": "server/sim/simdata.js:72-73",
+      "note": "isShopItem 要求 !hideInShop，所以 true 会让该道具从每一个「商店道具」抽取里消失（商店道具槽 pool.js:145、道具补给/机密商店 choices.js:126、pool_equip_* 池 spDraft.js:184）。官方数据里 3 件奇术为 true。它不产生客户端的「不出售」提示（那是 shopExcluded）。"
+    },
+    "shopExcluded": {
+      "zh": "本仓库自加的「效果专用、商店不卖」标记",
+      "kind": "boolean",
+      "risk": "危险",
+      "src": "server/sim/simdata.js:72 / tools/build-data.mjs:1986,2040",
+      "note": "不是官方字段：build-data 用显式清单 SHOP_EXCLUDED_ITEMS（4 件特殊维式重锤 + 突变细胞）按 baseId 写入。它同样被 isShopItem 当排除条件用，所以错设一个普通道具为 true 会让它永久无法从任何商店/补给池获得（只能靠效果给），属于静默的数据不一致；客户端也会多出一条「调度中心不出售」提示（detailPanel.js:518）。"
+    },
+    "shopExcludedBy": {
+      "zh": "「不出售」提示里的获取途径文案",
+      "kind": "string",
+      "risk": "安全",
+      "src": "public/js/ui/detailPanel.js:518",
+      "note": "纯文案，只在 shopExcluded 为 true 时显示为「调度中心不出售 · 获取途径：{source}」。不影响任何抽取逻辑。"
+    },
+    "mergeable": {
+      "zh": "能否与同名普通件合成进阶件",
+      "kind": "boolean",
+      "risk": "危险",
+      "src": "tools/build-data.mjs:2049 / server/match/player/acquire.js:253-259",
+      "note": "是 build-data 推导字段：mergeable = !isGolden && 0 < upgradeNum < 100。运行时判定同时要求 rec.mergeable 与 1 < upgradeNum < 100（_itemMergeable），两处必须一致：把 upgradeNum=100 的突变细胞改成 mergeable:true 依然不会合成（卡在 upgradeNum 条件上）；把普通件改成 mergeable:false 会让它永不合成，客户端「2 件相同装备自动合成进阶装备」提示与合成高亮也一起消失（placement.js:435、shop.js:90）。"
+    },
+    "upgradeNum": {
+      "zh": "合成所需件数（0/100 = 永不合成）",
+      "kind": "number",
+      "risk": "危险",
+      "src": "server/match/player/acquire.js:256,258,306,339",
+      "note": "服务端与客户端都只在 1 < n < 100 时认为可合成（acquire.js:256、invariants.js:156、placement.js:435、shop.js:90），所以 0 与 100 都是「永不合成」。改成 3 就要 3 件才合成，手牌 + 临时区 + 已装备的同名件都计入（_itemLocations）。注意 build-data 会用 upgradeNum 重新推导 mergeable，手改成 1 也会被当成不可合成。"
+    },
+    "upgradeChessId": {
+      "zh": "合成产物（进阶件）的 id",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/player/acquire.js:258,314",
+      "note": "优先于 goldenId 被读取（`upgradeChessId || goldenId`，acquire.js:258/314、placement.js:436、shop.js:91）。指向不存在的 id → 该道具静默不再合成；指向别的道具 id → 合成出错误的进阶件。必须与 goldenId 保持一致。"
+    },
+    "duration": {
+      "zh": "官方 trapDuration（0 / -1）",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2051（运行时无读取者）",
+      "note": "结论：全库没有任何运行时代码读取 items.json 顶层的 duration。sim 里所有 .duration 命中的都是技能/增益参数 p.duration、buff.duration 或 skill.duration，与这个字段无关。纯元数据。"
+    },
+    "giveBondId": {
+      "zh": "授予的盟约 id：与变形同构体同装时，携带者算作该盟约成员",
+      "kind": "id",
+      "risk": "谨慎",
+      "src": "server/match/bondsMeta.js:43-46 / server/sim/content/support/index.js:187 / server/sim/content/support/meta.js:60-62",
+      "note": "不是「装上就获得盟约」：只有当同一干员同时装备了 canGiveBond 的变形同构体 + 这件道具时，携带者才被算作该盟约成员（服务端备战、战斗侧 unitBonds、客户端 gameLogic/bonds.js 三处同规则）。所以改它＝改盟约人数与层数，必须是 bonds.json 里存在的 id（build-data 会校验，tools/build-data.mjs:3983）。已统计的 15 条非 null 都是某个盟约 id。"
+    },
+    "givePowerId": {
+      "zh": "官方 givePowerId",
+      "kind": "id",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2052（运行时无读取者）",
+      "note": "结论：审计全库（server / shared / public/js）没有任何代码读取 items.json 的 givePowerId。纯元数据，随便改。"
+    },
+    "canGiveBond": {
+      "zh": "「变形同构体」标记",
+      "kind": "boolean",
+      "risk": "危险",
+      "src": "server/match/bondsMeta.js:43-46 / server/sim/content/support/index.js:184-187",
+      "note": "整套授予规则由它开关：只有 `recs.some(r => r.canGiveBond)` 成立，代码才会去看同装道具的 giveBondId。设为 false → 变形同构体 ＋ 伙伴道具的整套机制失效（客户端详情卡的天赋栏 MorphPairings 也消失，detailPanel.js:512）；给普通道具设 true → 任何携带者只要再带一件有 giveBondId 的道具就获得该盟约。"
+    },
+    "requiresBondId": {
+      "zh": "「推荐给该盟约成员」标记（人工研究字段）",
+      "kind": "id",
+      "risk": "安全",
+      "src": "server/match/bot.js:1808-1809",
+      "note": "不是装备限制：玩家可以把炎国短刀装备给非炎国干员，服务端不拦。运行时代码只有 AI 用它挑携带者（优先给该盟约成员）。build-data 会校验它在 bonds.json 里存在（tools/build-data.mjs:3984）。改它只轻微影响 AI 的配装倾向。"
+    },
+    "effectId": {
+      "zh": "对应 data/effects.json 里的 EQUIP 效果 id",
+      "kind": "id",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2054（运行时无读取者）",
+      "note": "结论（已确认，不推翻）：运行时没有任何代码读 items.json 的 effectId。它是 build-data 从官方 trapChessDataDict 抄来的溯源链接，用来在生成时到 effects.json 取出 desc / descRaw / buffs / params 四份副本。改成不存在的 id，运行期毫无变化；但下次重新生成数据时 build-data 会 warn，并让该道具的 desc / buffs / params 全空。"
+    },
+    "effectName": {
+      "zh": "effects.json 效果名的副本",
+      "kind": "string",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2054（运行时无读取者）",
+      "note": "运行时显示用的是 items.json 的 name（effectsMeta.js:437 offerLabel 读 it.name）。全库读 effectName 的地方全部属于 bands.json（bandDraft.js:312、player/views.js:31、enemyDrawer.js:79、observe.js:175）。纯元数据。"
+    },
+    "desc": {
+      "zh": "官方描述的去标记纯文本（descRaw 缺失时的回退）",
+      "kind": "string",
+      "risk": "谨慎",
+      "src": "public/js/ui/detailPanel.js:511 / server/match/builtinMeta.js:249",
+      "note": "显示优先用 descRaw（`item.descRaw || item.desc`）。除显示外它被当字符串嗅探过一次：builtinMeta.js:249 用 `rec.desc.includes(\"完美\")` 判断「神秘顾客」在拿不到 band 悬赏时只发完美（战术特训）悬赏卡 —— 删掉 desc 里的「完美」二字会改变这条备用行为。其余场合改它只影响文案。"
+    },
+    "descRaw": {
+      "zh": "游戏里真正显示的富文本描述",
+      "kind": "string",
+      "risk": "安全",
+      "src": "public/js/ui/detailPanel.js:511 / public/js/ui/richText.js:55",
+      "note": "详情卡、商店道具卡（shopBar.js:172）与机变卡（choiceOverlay.js:41-46）都用 descRaw || desc，由 richText.js 解析 <@ba.vup>…</> 这类官方标记（高亮数字、术语、换行）。改它只改变显示，不影响结算。"
+    },
+    "buffs": {
+      "zh": "效果 buff 列表（战斗侧权威数值来源）",
+      "kind": "array",
+      "risk": "危险",
+      "src": "server/sim/content/items/battle.js:902-916 / server/match/builtinMeta.js:323-331",
+      "note": "战斗侧权威：installItem 遍历 rec.buffs，按每条 buff 的 bbStr.key（战斗 rune key）决定加什么属性/挂什么钩子，参数取 { ...bb, ...bbStr }（battle.js:902-916、bp() battle.js:56-59）。同一份 buffs 的 buff.key 又是备战侧处理器注册与分派的依据（builtinMeta.js:323-331；bot.js:1822 的 isBountyArt 也读它）。删一条 buff 会让对应效果静默消失；把 bb 里的键名写错会让 battle.js 找不到 rune 而什么都不做。"
+    },
+    "params": {
+      "zh": "效果参数的拍平副本（备战侧权威数值来源）",
+      "kind": "object",
+      "risk": "危险",
+      "src": "server/match/builtinMeta.js:37-40 / tools/build-data.mjs:1811-1818",
+      "note": "备战侧权威、只被备战读：paramsOf(ctx, item) 读 rec.params 取 count / layer / refresh_cnt 等（builtinMeta.js:37，用于 73-206 行的一批处理器）。它由 build-data 的 effectParams 从 buffs 拍平（跨 buff 合并 { ...bb, ...bbStr }，先出现的键胜出，所以跨 buff 的同名键会丢：蒸汽之心的攻击速度 35 被第一条 buff 的 30 覆盖，见 chess_item_6_05_e_a.params）。只改 params → 只改备战行为；只改 buffs → 只改战斗数值；两者不一致时同一件装备在备战期和战斗期表现不同。"
+    },
+    "category": {
+      "zh": "人工研究分类（STAT / ON_HIT / RECRUIT / SURVIVAL / BOND_SIGNATURE / ECONOMY / SET / MAGIC / BOND / SP / BOND_GRANT）",
+      "kind": "enum",
+      "risk": "谨慎",
+      "src": "server/match/bot.js:1815",
+      "note": "不是官方字段（来自 docs/research/04-items.json）。运行时唯一被读的值是 SURVIVAL：bot 会优先把这类装备给阻挡位（bot.js:1815）。改它只改变 AI 的配装倾向，战斗规则不看它。"
+    },
+    "kind": {
+      "zh": "人工研究分类（passive / consume_on_equip / passive_counter / art_instant / consume_on_equip_or_delayed / passive_player / post_battle_transform）",
+      "kind": "enum",
+      "risk": "危险",
+      "src": "server/match/player/items.js:32 / server/match/bot.js:1187,1802 / public/js/ui/gameLogic/placement.js:400",
+      "note": "不是官方字段，但被当开关用：以 \"consume_on_equip\" 开头的值表示装备时消耗（服务端走替换分支并派发 onEquip，items.js:32-60；客户端据此显示替换确认，placement.js:400；bot 据此挑携带者，bot.js:1187、1802）。其余值运行时无人比较：art_instant 的奇术行为其实由 itemType === \"MAGIC\" 决定，突变细胞的行为由 buff key char_chess_transformation_equip 决定（builtinMeta.js:224），passive / passive_counter / passive_player 只是给人和工具看的分类（tools/balance.mjs:220 会读 passive / passive_counter）。改错 consume_on_equip 前缀会让消耗型道具变成永久装备或反之。"
+    },
+    "family": {
+      "zh": "人工研究分类（null 或 hammer）",
+      "kind": "enum",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2058（运行时无读取者）",
+      "note": "结论：没有任何运行时代码读 items.json 的 family。锤子族的识别完全靠 buffs 里的 bbStr.big_hammer（server/sim/content/items/battle.js:103-129）。纯元数据。"
+    },
+    "implFormula": {
+      "zh": "人工编写的实现公式说明（后加字段）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2059（运行时无读取者）",
+      "note": "已确认：全库没有任何运行时代码读取 implFormula，i18n 工具也把它显式排除在翻译外（tools/build-i18n.mjs:158 的 NOTE_KEYS）。它是 build-data 从 docs/research/04-items.json 写入的人类文档（ITEM_RULES 可覆盖），随便改 —— 但它描述的是真实公式，改错只会误导读者。"
+    },
+    "note": {
+      "zh": "人工补充规则（详情卡上的一行提示）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "public/js/ui/detailPanel.js:514",
+      "note": "只由 build-data 的 ITEM_RULES 为突变细胞写入（当前全库只有 1 条），显示成详情卡里带 info 图标的一行。纯文案。"
+    },
+    "rangeGrid": {
+      "zh": "作用格范围（相对偏移 [row, col]）",
+      "kind": "array",
+      "risk": "谨慎",
+      "src": "server/match/player/items.js:116 / public/js/ui/facing.js:157",
+      "note": "装备类道具（EQUIP）的 rangeGrid 全是 [[0,0]]，没有任何逻辑读它；只有奇术（MAGIC）会被 g.art 当落点范围用（服务端 items.js:116-122 按 rangeGrid 计算受影响的格子，客户端用同一份画范围，facing.js:157）。改奇术的 rangeGrid 会直接改它能作用的格子数与方向。"
+    },
+    "flavor": {
+      "zh": "风味文本",
+      "kind": "string",
+      "risk": "安全",
+      "src": "public/js/ui/detailPanel.js:508",
+      "note": "详情卡右上角的小字。没有任何逻辑读取它，随便改。"
+    }
+  },
+  "bonds": {
+    "_doc": {
+      "zh": "本组说明的是 data/bands.json（策略 / 乐队，40 条）的字段；data/bonds.json（盟约）不在本次范围。",
+      "kind": "meta",
+      "risk": "安全",
+      "src": "data/bands.json"
+    },
+    "bandId": {
+      "zh": "策略 id（同时是 data/bands.json 对象 map 的 key）",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/effectsMeta.js:104 / server/match/gamedata.js:489-522",
+      "note": "服务端按 key 查表，效果处理器注册为 `band:<bandId>`（effectsMeta.js:104），玩家状态 ps.bandId 指向它；bandAllowed / startLp / bandBondIds 全部按 key 查（gamedata.js:491-522）。改 key 而不改引用（config.json 的默认策略、bandDraft.timeoutBandId）会让策略失效。"
+    },
+    "sortId": {
+      "zh": "草稿列表排序号",
+      "kind": "number",
+      "risk": "安全",
+      "src": "server/match/gamedata.js:501 / public/js/screens/bandDraft.js:53",
+      "note": "只影响策略草稿列表与 AI 遍历的顺序（bandIds 按 sortId 从大到小，再按 id）。"
+    },
+    "name": {
+      "zh": "策略显示名（= effects.json 的 name 副本，官方 bandName 优先）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/match/player/views.js:31 / public/js/screens/bandDraft.js:312",
+      "note": "显示用；运行时逻辑不读它。"
+    },
+    "iconId": {
+      "zh": "策略图标 id",
+      "kind": "id",
+      "risk": "安全",
+      "src": "public/js/ui/enemyDrawer.js:79 / public/js/screens/bandDraft.js",
+      "note": "纯显示。"
+    },
+    "modeTypeList": {
+      "zh": "该策略可用的模式类型列表（LOCAL / SINGLE / MULTI）",
+      "kind": "array",
+      "risk": "危险",
+      "src": "server/match/gamedata.js:491-499",
+      "note": "bandAllowed 要求列表包含当前模式类型（单人读 SINGLE，其余读 MULTI），bandIds() 就是靠它过滤的；客户端策略草稿用同一规则（bandDraft.js:55）。删掉 \"MULTI\" 会让该策略在联机模式彻底不可选，删空/写错大写会让它任何模式都不出现。"
+    },
+    "totalHp": {
+      "zh": "该策略的初始生命值（LP）",
+      "kind": "number",
+      "risk": "危险",
+      "src": "server/match/gamedata.js:504-507 / server/match/audit.js:318",
+      "note": "开局 LP = startLp(bandId)（要求正整数，否则回落到 config 的 defaultStartLp），运行期审计还会拿它校验玩家 LP。改它直接改难度。"
+    },
+    "effectId": {
+      "zh": "指向 data/effects.json 里的 BAND_INITIAL 记录",
+      "kind": "id",
+      "risk": "谨慎",
+      "src": "server/match/player/views.js:31 / server/match/fields.js:580 / public/js/battle/observe.js:173",
+      "note": "运行时用它当效果栏的条目 id（views.js:31）、字段审计时取整条 effect 记录（fields.js:580）、客户端按它把策略效果挂到效果列表（observe.js:173）。注意策略的实际行为读的是本文件自己的 buffs/bb，而不是这条 effect 记录；改 effectId 会让「显示/审计指向」与实际行为脱节（build-data 生成时会 warn：bands.json 的 effectId 是从官方 bandDataListDict 抄的）。"
+    },
+    "effectName": {
+      "zh": "effects.json 效果名的副本",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/match/player/views.js:31 / public/js/screens/bandDraft.js:312",
+      "note": "显示用（效果栏与策略详情）。"
+    },
+    "desc": {
+      "zh": "策略描述（去标记纯文本）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "public/js/screens/bandDraft.js:313（descRaw || desc）",
+      "note": "纯显示。注意 build-data 会用同一段文字（以及黑板）推导 bondIds（shared/bandBonds.js，在 tools/build-data.mjs 里调用）；手改 desc 不会立刻影响运行，但下次重新生成数据时 bondIds 可能变化。"
+    },
+    "descRaw": {
+      "zh": "策略描述的富文本（游戏里真正显示的那份）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "public/js/screens/bandDraft.js:313 / public/js/ui/enemyDrawer.js:80",
+      "note": "客户端用 descRaw || desc（RichText 解析）。纯显示。"
+    },
+    "buffs": {
+      "zh": "策略效果的 buff 列表（权威数值来源）",
+      "kind": "array",
+      "risk": "危险",
+      "src": "server/sim/content/bands/meta.js:37,500 / server/sim/content/bands/battle.js:258-267",
+      "note": "备战与战斗两侧都遍历 buffs（buffsOf(bandRecord(id))），按 buff.key（备战）或 buff.bbStr.key（战斗 rune key）组装处理器，参数取 { ...bb, ...bbStr }。删一条 buff 或写错键名 = 该策略的对应效果静默消失。"
+    },
+    "params": {
+      "zh": "buff 参数的拍平副本",
+      "kind": "object",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2091（运行时无读取者）",
+      "note": "结论：两个策略模块都遍历 buffs 取各自 b.p，没有任何代码读 bands.json 的 params。纯元数据（且它是拍平副本，跨 buff 同名键会丢）。"
+    },
+    "victorCount": {
+      "zh": "官方胜场数门槛",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2092（运行时无读取者）",
+      "note": "结论：本仓库没有任何代码读取 victorCount（未实现官方「胜场数」解锁门槛）。纯元数据。"
+    },
+    "rewardModulus": {
+      "zh": "官方奖励系数（bandRewardModulus）",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2092（运行时无读取者）",
+      "note": "结论：没有任何代码读取 rewardModulus。纯元数据。"
+    },
+    "unlockDesc": {
+      "zh": "官方解锁说明文案",
+      "kind": "string",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:2093（运行时无读取者）",
+      "note": "结论：没有任何代码读取 unlockDesc。纯元数据。"
+    },
+    "bondIds": {
+      "zh": "该策略机制围绕的盟约 id 列表",
+      "kind": "array",
+      "risk": "谨慎",
+      "src": "server/match/gamedata.js:518-523 / server/match/bot.js:149 / public/js/ui/gameLogic/bonds.js:325-334",
+      "note": "build-data 用 shared/bandBonds.js 从策略文本与黑板推出。运行时有两条读取链：服务端 AI 组策略时排除「绑定盟约在本局被禁」的选项（bandBondIds → bot.js:149），客户端策略草稿打「本局禁用」标记（gameLogic/bonds.js:325-334、bandDraft.js:12）。写成不存在的 id 会被 gamedata.js:522 过滤掉（等同空数组，基本无害）；写成错误的已存在 id 会让 AI 与 UI 误判该策略在本局是否可用。"
+    }
+  },
+  "choicesBounty": {
+    "effectId": {
+      "zh": "对应 data/effects.json 的记录 id（ENEMY_GAIN）",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/choices.js:196-200 / server/sim/content/choices.js:95,197 / server/match/invariants.js:84",
+      "note": "是这行卡片的主键与 effectId 链接：bountyCard 用 c.effectId 到 effects.json 取富文本（choices.js:197）；内容侧按 `choice:<effectId>` 注册并分派处理器（effectsMeta.js:106、sim/content/choices.js:197-199），悬赏卡的效果明细（敌人 key/只数/赏金/场次）也是从这条 effect 的 buffs 读出来的（sim/content/choices.js:104-122）。改成不存在的 id 时会退化成「只用 choices.json 自己的字段结算」：还能生效，但富文本丢失、effects 侧的修正不再参与。"
+    },
+    "name": {
+      "zh": "卡片名（悬赏名）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/match/choices.js:199 / server/sim/content/choices.js:116",
+      "note": "显示名。注意 bountyOf 优先用 effects.json 的 name（`effect.name ?? card?.name ?? \"悬赏\"`），所以改了 choices.json 的 name 但 effects.json 的 name 不同，玩家看到的是 effects.json 的那个。"
+    },
+    "desc": {
+      "zh": "卡片正文的纯文本版",
+      "kind": "string",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:199 / public/js/ui/choiceOverlay.js:41-46",
+      "note": "显示回退。客户端 cardText 的策略是：只有 choices.json 的 desc 与 data 里那份富文本「内容一致（去标记去空白后相等）」时才显示富文本，否则显示这里的纯文本。所以 desc 与 effects.json 的 descRaw 脱节时，卡片会从高亮富文本退化成朴素纯文本（这是改 desc 唯一的行为影响）。"
+    },
+    "tier": {
+      "zh": "悬赏阶（I / II / III）",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:236-244 / server/match/builtinMeta.js:251",
+      "note": "用于两处规则：草稿组合的补卡规则（initialRuleSet 要求 I I I II II III 各占一档、perSeries 限制，choices.js:229-246）；「教鞭 / 神秘顾客」随机取卡的档位过滤（c.tier <= 2，builtinMeta.js:251）。改它会影响这张卡出现在哪些官方草稿组合与随机池里。"
+    },
+    "coin": {
+      "zh": "赏金（资金）",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/match/match/spDraft.js:175 / server/match/waves.js:545 / server/match/match/settle.js:58",
+      "note": "结算金额：payout=kill 时写进战斗 spaw n 的 bounty，敌人被击杀时由战斗立刻付给击杀者（server/sim/battle/deploy.js:155、economy.js:52-74，联防里跟着漏怪走 unite.js:70-77）；payout=perfect 时在该玩家本场完美作战的情况下于结算阶段支付（settle.js:58、bossRounds.js:412）。addBounty 会 clamp 到 ≥0 的整数。"
+    },
+    "payout": {
+      "zh": "领奖方式：kill（击杀即付）| perfect（完美作战才付）",
+      "kind": "enum",
+      "risk": "危险",
+      "src": "server/match/match/spDraft.js:175 / server/match/choices.js:188-193 / server/match/waves.js:545",
+      "note": "决定结算路径：只有非 perfect 的击杀悬赏会被写进战斗的 bounty（waves.js:545），perfect 的则在 SETTLE / BOSS 回合结算时按「本场没有漏怪」支付（settle.js:58、bossRounds.js:412）。它同时决定默认的可入草稿性（draft 缺失时 `payout !== \"perfect\"` 才可入悬赏草稿，choices.js:188-193）。写错拼写（如 \"KILL\" / \"PERFECT\"）会被 addBounty 归一化成 kill（spDraft.js:175 `card.payout === \"perfect\" ? \"perfect\" : \"kill\"`），于是「完美才给钱」的卡变成「杀掉就给钱」。"
+    },
+    "rounds": {
+      "zh": "该悬赏敌人在接下来几场战斗中出现",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:80-83 / server/match/match/settle.js:60",
+      "note": "被 bountyBattles 归一化到 1–99；addBounty 记 roundsLeft，每场结算后 -1，减到 0 移除（settle.js:60-61、bossRounds.js:415-416）。≥90 会被当作「之后每场」的多轮卡并由 multiRound 分支压成 2 场（choices.js:76-83）。"
+    },
+    "multiRound": {
+      "zh": "是否「之后每场作战」型长时卡",
+      "kind": "boolean",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:76-95",
+      "note": "isMultiRoundBounty 命中（multiRound === true 或 rounds ≥ 90）后：持续场次被强制为 MULTI_ROUND_BOUNTY_BATTLES = 2，卡片文案被改写成「接下来两场作战」（bountyText）。改它等于换这张卡的行为与文案。"
+    },
+    "enemyKey": {
+      "zh": "加入战斗的敌人 key（data/enemies.json）",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/match/spDraft.js:170 / server/match/waves.js:494 / public/js/ui/choiceOverlay.js:65",
+      "note": "必须存在于 enemies.json：addBounty 要求 gd.enemy(card.enemyKey)，否则直接返回 null（spDraft.js:170）；bountyPlan 也再次校验，找不到就把这条悬赏整条跳过（waves.js:494）；客户端用它选悬赏卡图标（choiceOverlay.js:65-71）。错一个字 = 卡片能被选中但完全没有效果（而且通常不会报错）。"
+    },
+    "count": {
+      "zh": "该悬赏敌人的数量",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/match/match/spDraft.js:175 / server/match/waves.js:499",
+      "note": "写进战斗刷怪计划的数量，两处都会 clamp 到 1–20（spDraft.js:175、waves.js:499）。"
+    },
+    "adds": {
+      "zh": "该悬赏效果的全部 add_enemy buff 明细（构建期产物）",
+      "kind": "array",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3324-3346",
+      "note": "结论：没有任何运行时代码读 adds。它是 build-data 从 effects.json 那条记录的所有 /add_enemy/ buff 拍出来的明细，只用于自校验（tools/build-data.mjs:4023 检查每个 enemyKey 是否存在）。卡片真正生效的字段是上面那 6 个顶层派生字段（enemyKey/count/coin/rounds/payout）与 effects.json 的 buffs；adds[0]（排除 next_battle_add_enemy_win_gain_coin 后取第一个）只是被抬升到顶层的来源说明。"
+    },
+    "adds[].buffKey": {
+      "zh": "这条明细来自哪个 effect buff key",
+      "kind": "string",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3326,3329（运行时无读取者）",
+      "note": "取值：add_enemy_kill_gain_coin（kill 悬赏）/ add_enemy_selfbattle_win_gain_coin、next_battle_add_enemy_win_gain_coin（perfect 悬赏）。运行时只读 effects.json 自己的 buffs，不读 adds[].buffKey；它只用来在 build-data 里挑 main、以及给人核对。"
+    },
+    "adds[].enemyKey": {
+      "zh": "明细里的敌人 key",
+      "kind": "id",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3325,3334（运行时无读取者）",
+      "note": "仅 build-data 自校验用（未知 key 会 warn）。真正生效的是顶层 enemyKey。"
+    },
+    "adds[].count": {
+      "zh": "明细里的敌人数量",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3325（运行时无读取者）",
+      "note": "仅说明用；真正生效的是顶层 count。"
+    },
+    "adds[].coin": {
+      "zh": "明细里的赏金",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3325（运行时无读取者）",
+      "note": "仅说明用；真正生效的是顶层 coin。"
+    },
+    "adds[].rounds": {
+      "zh": "明细里的持续场次",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3326（运行时无读取者）",
+      "note": "仅说明用；真正生效的是顶层 rounds / multiRound。"
+    },
+    "adds[].payout": {
+      "zh": "明细里的领奖方式",
+      "kind": "enum",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3326（运行时无读取者）",
+      "note": "仅说明用；真正生效的是顶层 payout。"
+    },
+    "draft": {
+      "zh": "是否允许出现在悬赏决策草稿里",
+      "kind": "boolean",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:188-193,316",
+      "note": "draftBounty 要求该卡 draft 为 true（缺失时才按 payout !== \"perfect\" 兜底）才会成为草稿候选（choices.js:188-193、316）。build-data 里 draft = !draftExcluded（tools/build-data.mjs:3346）。把原本被排除的卡（战术特训、鸭爵套等）改成 true，会把它放进正式草稿池。"
+    },
+    "draftExcluded": {
+      "zh": "被排除出草稿的原因说明",
+      "kind": "string",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:3336-3346（运行时无读取者）",
+      "note": "结论：运行时代码只读 draft，不读 draftExcluded。它是 build-data 写出来解释「为什么这张卡不进草稿」的字符串（unseen / hidden 等），供人核对。改它不影响运行（除非同步改 draft）。"
+    },
+    "draftPool": {
+      "zh": "属于哪种草稿（initial / boss / hunter）",
+      "kind": "string",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:188-192,314-318",
+      "note": "draftBounty(c, kind) 里：kind 非 null 且 draftPool 是字符串且不等于 kind → 直接淘汰（choices.js:189）。kind 由 choices.json schedule[modeId].rounds[r].bountyDraft 或 bountyDraftKind（R3 initial / R9 boss / R11 hunter）给出。写成 null（缺失）会让这张卡在三种草稿里都可入选；写成错误的 kind 会让它在该草稿消失、在别的草稿出现。"
+    },
+    "series": {
+      "zh": "官方系列号（从 effectId 的 enemyeffect_<n>_<m> 抓出）",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:235-243,262",
+      "note": "只用于「补齐从未见过的官方组合」的两条自动补卡规则：initialRuleSet 限制同一系列最多几张、hunterFill 的 onePerSeries 与系列 16 的上限（choices.js:229-266）。改成 null 或别的数会改变这些规则挑出来的卡，也会破坏 build-data 的 BOUNTY_* 组校验。"
+    }
+  },
+  "choicesTactic": {
+    "effectId": {
+      "zh": "对应 data/effects.json 的 BUFF_GAIN 记录 id",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/effectsMeta.js:106 / server/sim/content/choices.js:300-301 / server/match/choices.js:369,373",
+      "note": "主键：机变卡的结算走 `choice:<effectId>` 注册表（内容侧为每张 BUFF_GAIN 卡注册 TACTIC 处理器，sim/content/choices.js:298-303），草稿生成也用它查 effects 记录才能让卡片入池（choices.js:373 `gd.effect(c.effectId)`）、按池查目标盟约（choiceTargetBonds，choices.js:369）。改成不存在的 id 会让这张卡永远不入池。"
+    },
+    "name": {
+      "zh": "卡片名",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/match/choices.js:356 / server/sim/content/choices.js:224",
+      "note": "显示名。注意效果栏里的名字优先取 effects.json 的 name（`eff.name ?? ev.card.name ?? id`，sim/content/choices.js:224）。"
+    },
+    "desc": {
+      "zh": "卡片正文的纯文本版",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/match/choices.js:356 / public/js/ui/choiceOverlay.js:41-46",
+      "note": "显示回退；卡片正文优先用 effects.json 的 descRaw（与悬赏卡同一套 cardText 规则）。不影响结算。"
+    },
+    "kind": {
+      "zh": "卡片类型：ally=己方增益 | enemyDebuff=敌方减益 | terrain=地形",
+      "kind": "enum",
+      "risk": "危险",
+      "src": "server/match/choices.js:366-381 / public/js/ui/choiceOverlay.js:69-70",
+      "note": "不是纯标签：terrain 卡只有在自己的 stageId 等于本局战场时才会入池（choices.js:373），而官方 R11 草稿的 tacticDraft.kinds（只有 ally）也会按它过滤池（choices.js:375-377）。客户端按它选图标（地形/敌方减益/队伍）。把 ally 改成 terrain 会让这张卡在本局地图不匹配时永远抽不到。"
+    },
+    "stageId": {
+      "zh": "地形卡的限定战场 id",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/choices.js:373",
+      "note": "只对 kind=terrain 有作用：tacticDraftCards 要求 c.stageId === 本局 stageId 才把该卡放进池（choices.js:373）。写成 null 或与 config.json 里 modes[].stages 的地图 id（act1autochess_mXX）不一致，会让这张地形卡永远抽不到（不会报错）。"
+    },
+    "team": {
+      "zh": "是否也发给所有存活队友",
+      "kind": "boolean",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:420-431 / server/sim/content/choices.js:225",
+      "note": "true 时 applyCard 会把该卡对抽取者与每一个存活队友各执行一次（choices.js:421-422），效果栏也用队伍图标（iconKind \"team\"，sim/content/choices.js:225 与客户端 choiceOverlay.js:65）。改成 true 会放大该卡影响的人数和强度。"
+    }
+  },
+  "effects": {
+    "effectId": {
+      "zh": "效果 id（同时是 data/effects.json 对象 map 的 key）",
+      "kind": "id",
+      "risk": "危险",
+      "src": "server/match/gamedata.js:189 / server/match/choices.js:196-200 / server/match/effectsMeta.js:106",
+      "note": "按对象 key 查表（GameData.effect = own(this.raw.effects, id)），同时它是各处的引用主键：choices.json 的 cards.bounty / cards.tactic 用它反查（choices.js:196-200、sim/content/choices.js:95-96）、机变卡处理器注册为 `choice:<effectId>`（effectsMeta.js:106）、bands.json 的 effectId 指向它（server/match/player/views.js:31）、悬赏记录保存 card.effectId 后回查（server/match/player/views.js:43）。改 key 不改正引用会让悬赏卡/战术卡/策略找不到效果。"
+    },
+    "effectType": {
+      "zh": "效果分类（ENEMY_GAIN / BUFF_GAIN / BAND_INITIAL / EQUIP / BOND / ENEMY / CHAR_MAP）",
+      "kind": "enum",
+      "risk": "危险",
+      "src": "server/sim/content/choices.js:162-176 / tools/build-data.mjs:3323,3373",
+      "note": "运行时只有两个值被代码比较：ENEMY_GAIN 与 BUFF_GAIN（sim/content/choices.js:167-168 用它们枚举可拾取的机变卡）。ENEMY_GAIN(129) = 悬赏卡效果池，build-data 据此生成 choices.json 的 cards.bounty（tools/build-data.mjs:3323）；BUFF_GAIN(43) = 战术卡效果池（3373）；BAND_INITIAL(41) = 策略/乐队初始效果，由 bands.json 的 effectId 指向（bands.json 另存了 name/desc/buffs/params 副本）；EQUIP(115) = 道具效果，由 items.json 的 effectId 指向；BOND(23) = 盟约效果，由 bonds.json 的 effectId 指向；CHAR_MAP(4) = 练度加成，按 shared/potential.js:36 的固定 id 列表映射；ENEMY(6) = 每回合敌人倍率（攻坚装备/补给线/急行军…），运行期无人读取（见该条说明）。把一条记录从 ENEMY_GAIN 改成别的值，会让它立刻退出悬赏卡池。"
+    },
+    "name": {
+      "zh": "效果名",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/sim/content/choices.js:116 / server/match/effectsMeta.js:438",
+      "note": "显示名，但运行时会用它：悬赏卡名走 `effect.name ?? card?.name ?? \"悬赏\"`（sim/content/choices.js:116），策略/特质效果栏的 label 走 offerLabel（effectsMeta.js:433-441）。build-data 也用它推导 cards.bounty 的 tier（名字末尾的 I/II/III，tools/build-data.mjs:3330-3331）。"
+    },
+    "desc": {
+      "zh": "效果描述（去标记纯文本）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/sim/content/choices.js:117 / public/js/ui/effectsList.js:29-44",
+      "note": "纯显示回退（效果栏 effectDesc 会在 descRaw / desc 之间挑当前语言的那份）。items.json 的 desc、bonds.json 的 effectDesc、bands.json 的 desc 都是它的一份副本 —— 注意 items.json 那份会被 builtinMeta.js:249 当字符串嗅探（找「完美」），所以改这条 desc 也可能间接影响道具行为。"
+    },
+    "descRaw": {
+      "zh": "效果描述的富文本（游戏里真正显示的那份）",
+      "kind": "string",
+      "risk": "安全",
+      "src": "server/match/choices.js:199 / public/js/ui/effectsList.js:37 / public/js/screens/bandDraft.js:313",
+      "note": "显示用：悬赏卡正文（choices.js:199 bountyCard 取 eff.descRaw）、效果栏 tooltip、策略草稿详情。改它只影响显示（含高亮与换行）。"
+    },
+    "counterType": {
+      "zh": "官方 effectCounterType",
+      "kind": "enum",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:1831（运行时无读取者）",
+      "note": "结论：全库没有任何代码读取 counterType（当前数据全是 NONE）。纯元数据。"
+    },
+    "continuedRound": {
+      "zh": "官方 continuedRound",
+      "kind": "number",
+      "risk": "安全",
+      "src": "tools/build-data.mjs:1831（运行时无读取者）",
+      "note": "结论：全库没有任何代码读取 continuedRound（当前数据全是 -1）。效果持续场次在悬赏卡上走 choices.json 的 rounds / multiRound（server/match/choices.js:80-83），不是这个字段。纯元数据。"
+    },
+    "enemyPrice": {
+      "zh": "官方 enemyPrice（悬赏价，兼作赏金兜底）",
+      "kind": "number",
+      "risk": "谨慎",
+      "src": "server/sim/content/choices.js:111 / tools/build-data.mjs:3331,3335 / public/js/ui/choiceOverlay.js:79",
+      "note": "运行时唯一被读的地方是悬赏赏金的兜底：`coin = int(bb.coin, int(effect.enemyPrice, 0))`（sim/content/choices.js:111）—— 只有当悬赏 buff 的 bb.coin 缺失时才用它。build-data 也用它兜底 tier 与 coin（3331、3335），客户端机变卡把它当 coin 的最后一档回退（choiceOverlay.js:79）。因为 bb.coin 一般都在，改它多数时候看不到效果，但会悄悄改掉缺 coin 的那些悬赏的赏金。"
+    },
+    "buffs": {
+      "zh": "效果 buff 列表（行为与数值的真正来源）",
+      "kind": "array",
+      "risk": "危险",
+      "src": "server/sim/content/choices.js:68-122,229-278 / server/match/builtinMeta.js:323-331",
+      "note": "一条效果做什么、怎么做，全在这一列：悬赏卡是否存在、敌人 key、只数、赏金、持续场次都从 buffs 里读（BOUNTY_KEYS + bbStr.enemy_id + bb.coin/count/round，sim/content/choices.js:68-122）；战术卡按 buff.key 分派到不同结算分支（sim/content/choices.js:231-268），完全没匹配上的键会退化成「战斗侧 EffectRef」（choices.js:273-278）；备战侧道具处理器也按 buff.key 注册（builtinMeta.js:323-331）。items.json / bands.json / bonds.json 里的 buffs 都是这些记录的副本。删一条 buff 或写错键名 = 对应行为静默消失。"
+    },
+    "params": {
+      "zh": "buff 参数的拍平副本",
+      "kind": "object",
+      "risk": "谨慎",
+      "src": "server/match/choices.js:512-517 / server/sim/content/devices.js:74-79",
+      "note": "会被读，但只走一条较窄的路径：机变卡的 family 默认结算在 addRef 里把 eff.params 拷进 EffectRef 的 params（choices.js:516），战斗侧据它做地格/装置开关（devices.js:78 遍历 playerEffects 的 params）。实际上几乎所有 BUFF_GAIN 卡都由内容侧 TACTIC 处理器接管（params 由 buffs 现算，sim/content/choices.js:275-277），只有拿不到 `choice:<id>` 处理器时才落到默认路径。另外它是拍平副本，跨 buff 的同名键会丢（tools/build-data.mjs:1811-1818 先出现者胜出），所以改 params 而不同步 buffs 会出现两个不一致的来源。"
+    }
+  },
+  "answers": {
+    "descVsDescRaw": "游戏里真正显示的是 descRaw：服务端也是把 desc 当数据里的富文本取出来、desc 是它的去标记版（descRaw = richRaw(e.effectDesc)，desc = stripRich(同一条)，tools/build-data.mjs:1830、183-192），客户端所有渲染点都写 `descRaw || desc`（详情卡 detailPanel.js:511、商店道具卡 shopBar.js:172、效果栏 effectsList.js:37、策略 bandDraft.js:313）。desc 只在 descRaw 为空/null 时被显示（并且机变卡还有一条额外规则：choices.json 的 desc 必须与 data 里那份富文本内容一致，否则客户端宁愿显示朴素纯文本，public/js/ui/choiceOverlay.js:41-46）。",
+    "mergeable": "合成是「同名普通件凑够 upgradeNum 件 → 就地换成 upgradeChessId（回退 goldenId）」：每次获得道具时若凑齐就立刻合成（PlayerState.acquireItem → completesItemMerge → _mergeItem），每次装备/退回后再扫一遍（checkItemMerges，server/match/player/acquire.js:253-345）；手牌、临时区、已装备件都算持有。改 mergeable 或 upgradeNum 会改变「能不能合成」与「几件能合成」：服务端/客户端都要求 rec.mergeable 为 true 且 1 < upgradeNum < 100（acquire.js:255-258、invariants.js:155-157、placement.js:434-436、shop.js:89-91），所以 0 或 100 都是永不合成；两处必须一起改才生效（mergeable 是 build-data 从 upgradeNum 推导出来的：`!isGolden && 0 < upgradeNum < 100`，tools/build-data.mjs:2049）。把它改成不可合成还会同时关掉客户端「2 件相同装备自动合成进阶装备」提示与合成高亮，但进阶件仍可由效果直接给（ctx.upgradeItem / 战斗奖励）。",
+    "effectIdRuntime": "结论：运行时没有任何代码读 items.json 的 effectId（不推翻你的观察，并确认它成立）。服务端查道具一律按 data/items.json 的对象 key（GameData.item = own(this._items, id)，server/match/gamedata.js:185），战斗与备战读取的都只有 buffs / params / itemType / kind / mergeable / upgradeNum / upgradeChessId / isGolden / tier / rangeGrid / giveBondId / canGiveBond / requiresBondId / name / desc 这些字段；全库 effectId 的读取点全部落在 choices.json 的卡片（server/match/choices.js:197-200、435、sim/content/choices.js:95-172、invariants.js:84、客户端 choiceOverlay.js:54-61）、bands.json 的 effectId（server/match/player/views.js:31、server/match/fields.js:580、public/js/battle/observe.js:173）与悬赏记录里保存的 card.effectId（server/match/player/views.js:43）。items.json 的 effectId 只是 build-data 从官方 trapChessDataDict 抄来的溯源链接，用来在生成时到 effects.json 取 desc / descRaw / buffs / params 四份副本（tools/build-data.mjs:2054-2057）；把它改成不存在的 id，运行期毫无变化，但下次重新生成数据时 build-data 会 warn 并让该道具的 desc / buffs / params 全空。",
+    "paramsVsBuffs": "buffs 是战斗侧权威、params 是备战侧权威，两者是同一份黑板的两个投影，不能只改一处。战斗侧 installItem 遍历 rec.buffs，按每条 buff 的 bbStr.key（战斗 rune key）决定加属性还是挂钩子，参数取 `{ ...bb, ...bbStr }`（server/sim/content/items/battle.js:56-59、885-916），文件头也明确写了「Numbers always come from the concrete record's buffs … the flattened params of data/items.json lose duplicate keys」；备战侧则由 builtinMeta 的 paramsOf(ctx, item) 读 rec.params 取 count / layer / refresh_cnt 等（server/match/builtinMeta.js:37-40、73-206）。params 的生成方式是 build-data 的 effectParams：把该效果所有 buff 的 bb 与 bbStr 依次 `{ ...bb, ...bbStr }` 合并，**先出现的键胜出、跨 buff 的同名键直接丢掉**（tools/build-data.mjs:1811-1818），所以它只是「够用」的拍平副本——现成例子是蒸汽之心：它两条 buff 各有一个 attack_speed（30 与 35），params.attack_speed 只剩 30，而战斗侧因为读 buffs 仍正确按 +35 生效（data/items.json chess_item_6_05_e_a）。后果是：只改 params 会改备战行为而战斗数值不变；只改 buffs 会改战斗数值而备战行为不变；两者不一致时同一件装备在备战期和战斗期的表现会不同，且 params 还可能因为丢重键而天生就是旧的。"
+  },
+  "enumZh": {
+    "itemType": {
+      "EQUIP": "装备（可配发给干员，走 g.equip；商店池只收这一类）",
+      "MAGIC": "奇术（必须拖到战场格子上使用，走 g.art）"
+    },
+    "category": {
+      "STAT": "属性类（直接给属性加成）",
+      "ON_HIT": "攻击附加类",
+      "RECRUIT": "招聘/获得干员类",
+      "SURVIVAL": "生存类（AI 会优先给阻挡位）",
+      "BOND_SIGNATURE": "盟约签名装备（需携带者为某盟约成员才触发额外效果）",
+      "ECONOMY": "经济类（资金/刷新）",
+      "SET": "套装类（与另一件特定装备同装才触发组合效果）",
+      "MAGIC": "奇术类",
+      "BOND": "盟约相关",
+      "SP": "技力相关",
+      "BOND_GRANT": "盟约授予类"
+    },
+    "kind": {
+      "passive": "常驻被动（行为完全由 buffs 决定；运行时无人读这个值）",
+      "consume_on_equip": "装备时触发并被消耗/替换（服务端按此前缀走替换分支并派发 onEquip）",
+      "passive_counter": "计数型被动（分类用；运行时不比较，仅 tools/balance.mjs 会读）",
+      "art_instant": "奇术（一次性使用，消耗掉；实际由 itemType === \"MAGIC\" 决定）",
+      "consume_on_equip_or_delayed": "装备时消耗，或延迟到战斗结束（同为 consume_on_equip 前缀，服务端一视同仁）",
+      "passive_player": "玩家级被动（计数作用于玩家，如「每卖 N 个干员」；运行时不比较）",
+      "post_battle_transform": "战斗结束后变身（突变细胞；实际行为由 buff key char_chess_transformation_equip 决定）"
+    },
+    "family": {
+      "hammer": "锤子族（仅人工分类：运行时靠 buffs 里的 bbStr.big_hammer 识别，不读本字段）",
+      "null": "不属于任何族"
+    },
+    "duration": {
+      "0": "官方 trapDuration = 0（运行时无人读取）",
+      "-1": "官方 trapDuration = -1（运行时无人读取，与「持续/瞬发」无关）"
+    },
+    "payout": {
+      "kill": "击杀即付：敌人被谁打死，赏金当场付给谁（含联防里被队友/帮手击倒）",
+      "perfect": "完美作战才付：该玩家本场没有漏怪，结算时付款"
+    },
+    "tacticKind": {
+      "ally": "己方增益卡",
+      "enemyDebuff": "敌方减益卡（给对手半场的敌人上减益）",
+      "terrain": "地形卡（只在本局战场等于 stageId 时才能被抽到）"
+    },
+    "effectType": {
+      "ENEMY_GAIN": "悬赏决策（敌人悬赏）效果 —— 129 条，choices.json cards.bounty 的来源，运行时唯一被比较的取值之一",
+      "BUFF_GAIN": "战术决策（增益卡）效果 —— 43 条，choices.json cards.tactic 的来源，运行时唯一被比较的另一个取值",
+      "BAND_INITIAL": "策略/乐队初始效果 —— 41 条，由 bands.json 的 effectId 指向",
+      "EQUIP": "装备/奇术效果 —— 115 条，由 items.json 的 effectId 指向",
+      "BOND": "盟约效果 —— 23 条，由 bonds.json 的 effectId 指向",
+      "ENEMY": "每回合敌人倍率（攻坚装备 / 补给线 / 急行军等）—— 6 条（aceffect_enemy_1/2/2_2/3/4/5）。运行期无人读取 effects.json 的这一组；同一套倍率在 build-data 里被算成算式写进 config.json 的 modes[].enemyScale，比赛读的是 config",
+      "CHAR_MAP": "练度（自持有）加成 —— 4 条（aceffect_char_1..4 = 未精英化 / 精英阶段1 / 精英阶段2 / 精英阶段2-60级），按 shared/potential.js 的固定 id 列表映射，读 char_attribute_mul 的 atk/def/max_hp"
+    }
+  }
+}
