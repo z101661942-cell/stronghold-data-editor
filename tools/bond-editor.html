@@ -2586,6 +2586,46 @@ function paintMix() {
   wireMixDetail();
 }
 
+/**
+ * 混合页的「挂到哪名干员」下拉：候选 = 这几条特质**当前携带者**的并集。
+ *
+ * 为什么两个分支都要它：不管能不能合成一条，用户都常常要「把这几条挂到同一名干员身上」
+ * （一条特质只能有一个 effectKey，让干员同时携带多条才是正确做法）。
+ * 之前只有「能合成」那个分支渲染了下拉，「不能合成」分支只有按钮没有下拉 ——
+ * 点下去处理函数找不到 #mixChess 就直接返回，表现为「按钮没反应 / 没有出现干员表格」。
+ *
+ * 选中项从 mixSel.chess 恢复：否则任何一次重绘（换顺序、改 id、切页签回来）都会把用户
+ * 刚选的干员重置回「先不挂」。
+ */
+function mixChessOptionsHtml() {
+  const seen = new Set();
+  const outs = [];
+  for (const gid of mixSel.ids) {
+    for (const u of garrisonUsers(gid)) {
+      if (seen.has(u.where)) continue;
+      seen.add(u.where);
+      outs.push('<option value="' + esc(u.where) + '"' + (u.where === mixSel.chess ? ' selected' : '') + '>'
+        + esc(u.name) + '（' + esc(u.where) + '）</option>');
+    }
+  }
+  return outs.join('');
+}
+
+/** 「挂到哪名干员」整个控件（含说明与空态提示）。两个分支共用，避免又出现两套写法。 */
+function mixChessFieldHtml() {
+  const opts = mixChessOptionsHtml();
+  const full = 'style="grid-column:1/-1"';
+  if (!opts) {
+    return '<label class="f" ' + full + '><span>挂到哪名干员（可选）</span>'
+      + '<select id="mixChess" disabled><option value="">（没有可选的干员）</option></select>'
+      + '<span class="hint" style="margin:2px 0 0">这几条特质目前没有任何干员携带。'
+      + '先到「干员」页把它们拖到某名干员身上（或先用能合成的那条路径创建），再回到这里。</span></label>';
+  }
+  return '<label class="f" ' + full + '><span>挂到哪名干员（可选，留空则只建特质）</span>'
+    + '<select id="mixChess"><option value=""' + (mixSel.chess ? '' : ' selected') + '>（先不挂）</option>' + opts + '</select>'
+    + '<span class="hint" style="margin:2px 0 0">候选 = 这几条特质当前的携带者。选中后点下面的按钮即可把它们都挂到他一个人身上。</span></label>';
+}
+
 function mixDetailHtml() {
   const picked = mixSel.ids.map((gid) => ({ gid, g: work.garrisons[gid] })).filter((x) => x.g);
   const chosen = picked.map((x) => '<li><span class="k">' + esc(x.gid) + '</span> '
@@ -2621,7 +2661,13 @@ function mixDetailHtml() {
       + '<div class="addbox" style="border-left:3px solid var(--bad);padding-left:8px">'
       + '<span class="hint" style="margin:0">' + esc(mix.reason) + '</span></div>'
       + (mix.notes.length ? '<p class="hint">' + mix.notes.map((n) => esc(n)).join('<br>') + '</p>' : '')
-      + '<div class="addbox"><button class="tiny primary" id="mixAttachAllBad">把它们都挂到同一名干员身上</button></div>'
+      /*
+       * 这个分支以前**只有按钮、没有干员下拉**，点下去处理函数拿不到 #mixChess 就直接返回，
+       * 用户看到的是「按钮没反应 / 没有出现干员表格」。下拉与按钮必须成对出现。
+       */
+      + '<div class="grid" style="margin-top:8px">' + mixChessFieldHtml() + '</div>'
+      + '<div class="addbox"><button class="tiny primary" id="mixAttachAllBad">把它们都挂到同一名干员身上</button>'
+      + '<span class="hint" style="margin:0">一条特质只能有一个实现，所以正确做法是让他<b>同时带这两条</b>。</span></div>'
       + '</fieldset>';
   }
   const ok = mix.kind === 'merge';
@@ -2635,21 +2681,7 @@ function mixDetailHtml() {
     + '<div class="grid" style="margin-top:8px">'
     + '<label class="f"><span>新特质 id（默认 garrison_N_mix）</span>'
     + '<input id="mixNewId" value="' + esc(mixSel.name || mix.record.garrisonId) + '"></label>'
-    + '<label class="f"><span>挂到哪名干员（可选，留空则只建特质）</span>'
-    + '<select id="mixChess"><option value="">（先不挂）</option>'
-    + (() => {
-      const seen = new Set();
-      const outs = [];
-      for (const gid of mixSel.ids) {
-        for (const u of garrisonUsers(gid)) {
-          if (seen.has(u.where)) continue;
-          seen.add(u.where);
-          outs.push('<option value="' + esc(u.where) + '">' + esc(u.name) + '（' + esc(u.where) + '）</option>');
-        }
-      }
-      return outs.join('');
-    })()
-    + '</select></label>'
+    + mixChessFieldHtml()
     + '<label class="f" style="grid-column:1/-1"><span>合并后的文案（可改；默认把各条文案接起来）</span>'
     + '<textarea id="mixDesc" rows="2">' + esc(mix.record.desc) + '</textarea></label>'
     + '</div>'
@@ -2676,12 +2708,22 @@ function wireMixDetail() {
   const attachAll = d.querySelector('#mixAttachAll') || d.querySelector('#mixAttachAllBad');
   if (attachAll) attachAll.addEventListener('click', () => {
     const sel = d.querySelector('#mixChess');
-    const cid = sel && sel.value;
-    if (!cid) { toast('先在下面选一名干员', 3200); return; }
+    // 下拉缺失也不该静默失败：先退回上次选的（mixSel.chess），再退回空值提示
+    const cid = (sel && sel.value) || mixSel.chess || '';
+    if (sel && sel.disabled) { toast('这几条特质还没有携带者：请先到「干员」页把它们挂到某名干员身上。', 6200); return; }
+    if (!cid) { toast('先在上面「挂到哪名干员」里选一名干员', 4200); return; }
+    mixSel.chess = cid;
     let n = 0;
-    for (const gid of mixSel.ids) if (attachTraitToChess(cid, gid).ok) n++;
+    const skipped = [];
+    for (const gid of mixSel.ids) {
+      const r = attachTraitToChess(cid, gid);
+      if (r.ok) n++;
+      else skipped.push(gid);
+    }
     render();
-    toast('已给 ' + cid + ' 挂上 ' + n + ' 条特质（原本已有的会跳过）', 5200);
+    toast(n
+      ? '已给 ' + cid + ' 挂上 ' + n + ' 条特质' + (skipped.length ? '；' + skipped.length + ' 条原本就有，跳过' : '')
+      : '这 ' + skipped.length + ' 条特质他原本就有了，没有变化', 6000);
   });
   const create = d.querySelector('#mixCreate');
   if (create) create.addEventListener('click', () => {

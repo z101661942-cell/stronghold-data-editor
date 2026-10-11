@@ -2270,5 +2270,92 @@ check('词典页列出新表的键（buff 处理器 / 战斗符文 / 引用字�
   assert.ok(filtered.includes('装备时销毁'), '搜索应按中文命中');
 });
 
+// ---- 21. 混合特性 → 「把它们都挂到同一名干员身上」-----------------------------------------
+console.log('混合特性 · 挂到同一名干员');
+/** 找两条 effectKey 不同、且都有人携带的特质（= 混合页会判「不能合成一条」的那种组合）。 */
+function twoUnmixableTraits() {
+  let g1 = null, g2 = null;
+  for (const g of api.traitIds()) {
+    const r = api.work.garrisons[g];
+    if (!r || !r.effectKey || !api.garrisonUsers(g).length) continue;
+    if (!g1) { g1 = g; continue; }
+    if (r.effectKey !== api.work.garrisons[g1].effectKey) { g2 = g; break; }
+  }
+  return [g1, g2];
+}
+check('「不能合成一条」分支必须同时给出干员下拉（曾经只有按钮，点了没反应）', () => {
+  const [g1, g2] = twoUnmixableTraits();
+  assert.ok(g1 && g2, '数据里应当有两条 effectKey 不同且有人携带的特质');
+  api.mixSel.ids = [g1, g2];
+  const html = api.mixDetailHtml();
+  assert.ok(html.includes('结论：不能合成一条'), '这两条应被判定为不能合成：' + g1 + ' / ' + g2);
+  /*
+   * 真出现过的 bug：这个分支只渲染了按钮、没有渲染 #mixChess 下拉，而点击处理函数
+   * 第一句就是 `d.querySelector('#mixChess').value` —— 拿不到就 return，
+   * 用户看到的就是「按钮没反应 / 没有出现干员表格」。
+   */
+  assert.ok(html.includes('id="mixChess"'), '「不能合成」分支必须有干员下拉');
+  assert.ok(/<option value="chess_/.test(html), '下拉里要有干员候选');
+  assert.ok(html.includes('id="mixAttachAllBad"'), '按钮仍然要在');
+  api.mixSel.ids = [];
+});
+check('干员下拉会记住上次选的那名干员（重绘不再重置）', () => {
+  const [g1, g2] = twoUnmixableTraits();
+  const cid = api.garrisonUsers(g1)[0].where;
+  api.mixSel.ids = [g1, g2];
+  api.mixSel.chess = cid;
+  const html = api.mixDetailHtml();
+  assert.ok(html.includes('value="' + cid + '" selected'), '上次选的干员应当保持选中：' + cid);
+  api.mixSel.chess = '';
+  const html2 = api.mixDetailHtml();
+  assert.ok(html2.includes('<option value="" selected>'), '没选过时应停在「先不挂」');
+  api.mixSel.ids = [];
+});
+check('候选来自「所有已选特质的携带者」：全都没有携带者时下拉禁用并给出指引', () => {
+  const noUsers = api.traitIds().filter((x) => api.work.garrisons[x] && !api.garrisonUsers(x).length);
+  const withUsers = api.traitIds().filter((x) => api.garrisonUsers(x).length);
+  // 1) 全都没有携带者 → 没有候选，禁用 + 说明下一步
+  if (noUsers.length >= 2) {
+    const g = noUsers.find((x) => api.work.garrisons[x].effectKey !== api.work.garrisons[noUsers[0]].effectKey) || noUsers[1];
+    api.mixSel.ids = [noUsers[0], g];
+    const html = api.mixDetailHtml();
+    if (html.includes('结论：不能合成一条')) {
+      assert.ok(/id="mixChess" disabled/.test(html), '全都没有携带者时应禁用下拉：' + noUsers.slice(0, 2).join(' / '));
+      assert.ok(html.includes('没有任何干员携带'), '应说明为什么没有候选');
+    }
+    api.mixSel.ids = [];
+  }
+  // 2) 只要有一条有人携带，候选就该包含那名干员（这正是用户要点按钮的场景）
+  if (noUsers.length && withUsers.length) {
+    const host = api.garrisonUsers(withUsers[0])[0].where;
+    api.mixSel.ids = [noUsers[0], withUsers[0]];
+    const html = api.mixDetailHtml();
+    if (html.includes('id="mixChess"') && !/id="mixChess" disabled/.test(html)) {
+      assert.ok(html.includes('value="' + host + '"'), '候选应包含携带者 ' + host);
+    }
+    api.mixSel.ids = [];
+  }
+});
+check('把两条挂到同一名干员：两条都进 garrisonIds，且干员页照常渲染', () => {
+  const [g1, g2] = twoUnmixableTraits();
+  const cid = api.garrisonUsers(g1)[0].where;
+  const entry = api.opIndex().find((e) => e.id === cid && e.kind === 'chess');
+  assert.ok(entry, '应能在干员名单里找到 ' + cid);
+  const before = JSON.stringify((api.work.chess[cid] || {}).garrisonIds || []);
+  const r2 = api.attachTraitToChess(cid, g2);
+  assert.ok(r2.ok || /已经有这条特质/.test(r2.reason || ''), '挂载结果异常：' + JSON.stringify(r2));
+  const arr = api.work.chess[cid].garrisonIds || [];
+  assert.ok(arr.includes(g1) && arr.includes(g2), '两条特质都应在这名干员身上：' + JSON.stringify(arr));
+  // 挂完必须还能渲染干员页（用户遇到的「没出现干员表格」就是这一步炸了）
+  const html = api.opForm(entry);
+  assert.ok(html && html.length > 1000, '干员页应正常渲染，实际 ' + (html ? html.length : 'null') + ' 字符');
+  assert.ok(html.includes(g1), '干员页里应能看到第一条特质');
+  assert.ok(html.includes(g2), '干员页里应能看到第二条特质');
+  // 还原，别影响后面的用例
+  api.work.chess[cid].garrisonIds = JSON.parse(before);
+  api.log.length = 0;
+  api.validate();
+});
+
 console.log(failed ? `\n${failed} failed` : '\nall checks passed');
 process.exit(failed ? 1 : 0);
